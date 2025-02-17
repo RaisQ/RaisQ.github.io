@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Первый клик
         selectedCell = { row, col };
         grid[row][col].selected = true;
+        playSound('ball-select-sound'); // Воспроизводим звук выбора шара
       } else {
         // Второй клик
         const firstCell = selectedCell;
@@ -84,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
           grid[firstCell.row][firstCell.col].selected = false;
           grid[row][col].selected = true;
           selectedCell = { row, col };
+          playSound('ball-select-sound'); // Воспроизводим звук выбора шара
         }
       }
   
@@ -99,6 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
       grid[cell1.row][cell1.col].selected = false;
       grid[cell2.row][cell2.col].selected = false;
   
+      playSound('ball-swap-sound'); // Воспроизводим звук перетаскивания шаров
       renderBoard(); // Обновляем доску после обмена (важно для анимации)
       checkForMatches();
     }
@@ -187,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
       renderBoard();
   
+      playSound('ball-remove-sound'); // Воспроизводим звук исчезновения шаров
       await new Promise(resolve => setTimeout(resolve, 300)); // Ждем окончания анимации
   
       let newScore = calculateScore(removedCount);
@@ -362,39 +366,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   
     // Обработчик кнопки смены темы
-    themeButton.addEventListener('click', toggleTheme);
+    themeButton.addEventListener('click', () => {
+      playSound('button-click-sound'); // Воспроизводим звук клика
+      toggleTheme();
+    });
   
-    // При загрузке страницы проверяем, есть ли сохраненная тема в localStorage
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      currentTheme = savedTheme;
-      if (currentTheme === 'dark') {
-        // Применяем темную тему при загрузке
-        const body = document.body;
-        const container = document.querySelector('.container');
-        const cells = document.querySelectorAll('.cell');
-        const buttons = document.querySelectorAll('button');
-  
-        body.classList.add('dark-theme');
-        container.classList.add('dark-theme');
-        cells.forEach(cell => cell.classList.add('dark-theme'));
-        buttons.forEach(button => button.classList.add('dark-theme'));
-      }
-    }
-  
-    // Обработчик кнопки включения/выключения звука (TODO)
+    // Обработчик кнопки включения/выключения звука
     soundButton.addEventListener('click', () => {
+      playSound('button-click-sound'); // Воспроизводим звук клика
       soundEnabled = !soundEnabled;
       soundButton.textContent = `Звук: ${soundEnabled ? 'Вкл' : 'Выкл'}`;
-      // TODO: Сохранять состояние звука в localStorage
+      localStorage.setItem('soundEnabled', soundEnabled); // Сохраняем состояние звука в localStorage
     });
   
     // Обработчик кнопки "Играть снова"
     restartButton.addEventListener('click', () => {
+      playSound('button-click-sound'); // Воспроизводим звук клика
       gameOverContainer.style.display = 'none';
       initializeGrid();
       updateScore(0);
     });
+  
+    // Функция для воспроизведения звука
+    function playSound(soundId) {
+      if (soundEnabled) {
+        const sound = document.getElementById(soundId);
+        sound.currentTime = 0; // Перематываем звук в начало
+        sound.play();
+      }
+    }
+  
+    // При загрузке страницы проверяем, есть ли сохраненное состояние звука в localStorage
+    const savedSoundEnabled = localStorage.getItem('soundEnabled');
+    if (savedSoundEnabled !== null) {
+      soundEnabled = savedSoundEnabled === 'true';
+      soundButton.textContent = `Звук: ${soundEnabled ? 'Вкл' : 'Выкл'}`;
+    }
   
     // Инициализация игры
     initializeGrid();
