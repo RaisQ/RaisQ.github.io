@@ -126,3 +126,75 @@
     background-color: #666;
     color: #fff;
   }
+
+/* ... (Предыдущие стили) ... */
+
+.cell {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0; /* Скрываем текст */
+    border-radius: 50%; /* Делаем ячейку круглой */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Добавляем тень */
+    border: none;
+  }
+  
+  .ball-1 {
+    background-color: blue; /* Синий шар */
+  }
+  
+  .ball-2 {
+    background-color: green; /* Зеленый шар */
+  }
+  
+  .ball-3 {
+    background-color: red; /* Красный шар */
+  }
+  
+  .ball-4 {
+    background-color: yellow; /* Желтый шар */
+  }
+  
+  .ball-5 {
+    background-color: purple; /* Фиолетовый шар */
+  }
+  
+  .cell.dark-theme.ball-1 {
+      filter: brightness(0.8); /*  Для темной темы  */
+  }
+  .cell.dark-theme.ball-2 {
+      filter: brightness(0.8); /*  Для темной темы  */
+  }
+  .cell.dark-theme.ball-3 {
+      filter: brightness(0.8); /*  Для темной темы  */
+  }
+  .cell.dark-theme.ball-4 {
+      filter: brightness(0.8); /*  Для темной темы  */
+  }
+  .cell.dark-theme.ball-5 {
+      filter: brightness(0.8); /*  Для темной темы  */
+  }
+  
+  /* Дополнительные стили для темной темы, если нужно */
+  .dark-theme .ball-1 {
+    background-color: darkblue;
+  }
+  
+  .dark-theme .ball-2 {
+    background-color: darkgreen;
+  }
+  
+  .dark-theme .ball-3 {
+    background-color: darkred;
+  }
+  
+  .dark-theme .ball-4 {
+    background-color: darkgoldenrod;
+  }
+  
+  .dark-theme .ball-5 {
+    background-color: darkmagenta;
+  }

@@ -37,9 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let col = 0; col < gridSize; col++) {
           const cell = document.createElement('div');
           cell.classList.add('cell');
-          cell.textContent = grid[row][col].value; // Отображаем значение шарика (можно заменить на картинки)
           cell.dataset.row = row;
           cell.dataset.col = col;
+  
+          // Добавляем класс для шара
+          cell.classList.add(`ball-${grid[row][col].value}`);
   
           if (grid[row][col].selected) {
             cell.classList.add('selected');
@@ -160,16 +162,30 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   
+    // Функция для очистки класса шара
+    function clearBallClass(cellElement) {
+      for (let i = 1; i <= 5; i++) {
+        cellElement.classList.remove(`ball-${i}`);
+      }
+    }
+  
     // Функция для удаления совпадений
     async function removeMatches(matches) {
       let removedCount = matches.length;
       matches.forEach(match => {
-        grid[match.row][match.col].value = null;
         const cellElement = document.querySelector(`.board .cell[data-row="${match.row}"][data-col="${match.col}"]`);
+  
+        // Добавляем класс "to-remove" перед удалением класса шара
         cellElement.classList.add('to-remove');
+  
+        // Удаляем класс шара
+        clearBallClass(cellElement);
+  
+        // Обнуляем значение в сетке
+        grid[match.row][match.col].value = null;
       });
   
-      renderBoard(); // Обновляем доску, чтобы применить класс to-remove
+      renderBoard();
   
       await new Promise(resolve => setTimeout(resolve, 300)); // Ждем окончания анимации
   
@@ -200,7 +216,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
   
-      renderBoard();
+      // Обновляем классы шаров в DOM после перемещения
+      const cellElements = document.querySelectorAll('.board .cell');
+      cellElements.forEach(cellElement => {
+        const row = parseInt(cellElement.dataset.row);
+        const col = parseInt(cellElement.dataset.col);
+        clearBallClass(cellElement);  // Сначала удаляем старый класс
+        cellElement.classList.add(`ball-${grid[row][col].value}`); // Добавляем новый класс
+      });
+  
       checkForMatches(); // Проверяем, образовались ли новые совпадения
     }
   
