@@ -1,12 +1,14 @@
-body {
+  body {
     font-family: sans-serif;
-    background-color: #f0f0f0;
+    background-color: #f0f0f0; /* Светлая тема по умолчанию */
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     margin: 0;
+    transition: background-color 0.3s ease; /* Плавный переход */
   }
+  
   
   .container {
     background-color: #fff;
@@ -85,4 +87,42 @@ body {
     align-items: center;
     flex-direction: column;
     color: white;
+  }
+
+  .container {
+    background-color: #fff; /* Светлая тема по умолчанию */
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    transition: background-color 0.3s ease; /* Плавный переход */
+  }
+  
+  .cell {
+    /* ... (остальные стили ячейки) ... */
+    background-color: #eee; /* Светлая тема по умолчанию */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Плавный переход */
+    color: #333;
+  }
+  
+  /* Темная тема */
+  body.dark-theme {
+    background-color: #333;
+    color: #fff;
+  }
+  
+  .container.dark-theme {
+    background-color: #444;
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+  }
+  
+  .cell.dark-theme {
+    background-color: #555;
+    color: #eee;
+    border: 1px solid #666;
+  }
+  
+  button.dark-theme {
+    background-color: #666;
+    color: #fff;
   }

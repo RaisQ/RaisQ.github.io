@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let score = 0;
     let soundEnabled = true;
   
+    let currentTheme = 'light'; // Текущая тема (light или dark)
+  
     // Функция для инициализации игрового поля
     function initializeGrid() {
       grid = [];
@@ -41,6 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
   
           if (grid[row][col].selected) {
             cell.classList.add('selected');
+          }
+  
+          if (currentTheme === 'dark') {
+            cell.classList.add('dark-theme');
           }
   
           cell.addEventListener('click', handleCellClick);
@@ -306,10 +312,51 @@ document.addEventListener('DOMContentLoaded', () => {
       scoreElement.textContent = score;
     }
   
-    // Обработчик кнопки смены темы (TODO)
-    themeButton.addEventListener('click', () => {
-      // TODO: Реализовать смену темы
-    });
+    // Функция для переключения темы
+    function toggleTheme() {
+      const body = document.body;
+      const container = document.querySelector('.container');
+      const cells = document.querySelectorAll('.cell');
+      const buttons = document.querySelectorAll('button');
+  
+      if (currentTheme === 'light') {
+        body.classList.add('dark-theme');
+        container.classList.add('dark-theme');
+        cells.forEach(cell => cell.classList.add('dark-theme'));
+        buttons.forEach(button => button.classList.add('dark-theme'));
+        currentTheme = 'dark';
+      } else {
+        body.classList.remove('dark-theme');
+        container.classList.remove('dark-theme');
+        cells.forEach(cell => cell.classList.remove('dark-theme'));
+        buttons.forEach(button => button.classList.remove('dark-theme'));
+        currentTheme = 'light';
+      }
+  
+      // Сохраняем тему в localStorage
+      localStorage.setItem('theme', currentTheme);
+    }
+  
+    // Обработчик кнопки смены темы
+    themeButton.addEventListener('click', toggleTheme);
+  
+    // При загрузке страницы проверяем, есть ли сохраненная тема в localStorage
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      currentTheme = savedTheme;
+      if (currentTheme === 'dark') {
+        // Применяем темную тему при загрузке
+        const body = document.body;
+        const container = document.querySelector('.container');
+        const cells = document.querySelectorAll('.cell');
+        const buttons = document.querySelectorAll('button');
+  
+        body.classList.add('dark-theme');
+        container.classList.add('dark-theme');
+        cells.forEach(cell => cell.classList.add('dark-theme'));
+        buttons.forEach(button => button.classList.add('dark-theme'));
+      }
+    }
   
     // Обработчик кнопки включения/выключения звука (TODO)
     soundButton.addEventListener('click', () => {
