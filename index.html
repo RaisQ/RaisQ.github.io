@@ -11,29 +11,31 @@
   <audio id="ball-remove-sound" src="./sounds/ball-remove.mp3" preload="auto"></audio>
 </head>
 <body>
-
-  <div class="container">
-    <div class="score-container">
-      Счет: <span id="score">0</span>
+    <div class="dropdown">
+        <button onclick="toggleDropdown()" class="dropbtn">Меню</button>
+        <div id="myDropdown" class="dropdown-content">
+            <button id="theme-button">Сменить тему</button>
+            <button id="sound-button">Звук: Вкл</button>
+            <button id="restart-button">Играть снова</button>
+        </div>
     </div>
 
-    <div class="board">
-      <!-- Игровое поле будет сгенерировано JavaScript -->
+    <div class="container">
+        <div class="score-container">
+            Счет: <span id="score">0</span>
+        </div>
+
+        <div class="board">
+            <!-- Игровое поле будет сгенерировано JavaScript -->
+        </div>
+
+        <div class="game-over-container" style="display: none;">
+            <h2>Игра окончена!</h2>
+            <p>Ваш счет: <span id="final-score">0</span></p>
+            <button id="restart-button">Играть снова</button>
+        </div>
     </div>
 
-    <div class="controls">
-      <button id="theme-button">Сменить тему</button>
-      <button id="sound-button">Звук: Вкл</button>
-      <button id="restart-button">Играть снова</button>
-    </div>
-
-    <div class="game-over-container" style="display: none;">
-      <h2>Игра окончена!</h2>
-      <p>Ваш счет: <span id="final-score">0</span></p>
-      <button id="restart-button">Играть снова</button>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
