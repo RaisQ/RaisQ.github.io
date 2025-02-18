@@ -6,12 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameOverContainer = document.querySelector('.game-over-container');
     const finalScoreElement = document.getElementById('final-score');
     const restartButton = document.getElementById('restart-button');
+    const toggleBackgroundButton = document.getElementById('toggle-background-button'); // Получаем кнопку
   
     const gridSize = 8; // Размер поля (8x8)
     let grid = [];
     let selectedCell = null;
     let score = 0;
     let soundEnabled = true;
+    let backgroundVisible = true; // Изначально фон виден
   
     let currentTheme = 'light'; // Текущая тема (light или dark)
   
@@ -365,6 +367,24 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('theme', currentTheme);
     }
   
+    // Функция для переключения фона
+    function toggleBackground() {
+      const container = document.querySelector('.container');
+      backgroundVisible = !backgroundVisible;
+    
+      if (backgroundVisible) {
+        container.classList.remove('no-background');
+        toggleBackgroundButton.textContent = 'Скрыть фон';
+        localStorage.setItem('backgroundVisible', 'true');
+      } else {
+        container.classList.add('no-background');
+        toggleBackgroundButton.textContent = 'показать фон';
+        localStorage.setItem('backgroundVisible', 'false');
+      }
+    
+      playSound('button-click-sound'); // Воспроизводим звук клика
+    }
+  
     // Обработчик кнопки смены темы
     themeButton.addEventListener('click', () => {
       playSound('button-click-sound'); // Воспроизводим звук клика
@@ -387,6 +407,9 @@ document.addEventListener('DOMContentLoaded', () => {
       updateScore(0);
     });
   
+      // Обработчик кнопки переключения фона
+    toggleBackgroundButton.addEventListener('click', toggleBackground);
+  
     // Функция для воспроизведения звука
     function playSound(soundId) {
       if (soundEnabled) {
@@ -394,6 +417,13 @@ document.addEventListener('DOMContentLoaded', () => {
         sound.currentTime = 0; // Перематываем звук в начало
         sound.play();
       }
+    }
+  
+    // При загрузке страницы проверяем, нужно ли скрыть фон
+    const savedBackgroundVisible = localStorage.getItem('backgroundVisible');
+    if (savedBackgroundVisible === 'false') {
+      backgroundVisible = false;
+      toggleBackground(); // Скрываем фон
     }
   
     // При загрузке страницы проверяем, есть ли сохраненное состояние звука в localStorage

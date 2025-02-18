@@ -53,6 +53,8 @@ GameProject/
 │   ├── ball-select.mp3
 │   ├── ball-swap.mp3
 │   └── ball-remove.mp3
+├── images/ 
+│   ├── fon.jpg
 ```
 
 Описание файлов и папок:
