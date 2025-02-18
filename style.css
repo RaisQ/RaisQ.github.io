@@ -1,3 +1,53 @@
+/* Стили для кнопки */
+.dropbtn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Контейнер для выпадающего меню */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Стили для выпадающего контента */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Стили для ссылок внутри выпадающего меню */
+.dropdown-content button {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* Изменение цвета ссылок при наведении */
+.dropdown-content button:hover {
+  background-color: #f1f1f1;
+}
+
+/* Показ выпадающего меню */
+.show {
+  display: block;
+}
+
+
 body {
   font-family: sans-serif;
   background-color: #f0f0f0;
