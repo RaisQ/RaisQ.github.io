@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameOverContainer = document.querySelector('.game-over-container');
     const finalScoreElement = document.getElementById('final-score');
     const restartButton = document.getElementById('restart-button');
+    const savedScore = localStorage.getItem('score');
   
     const gridSize = 8; // Размер поля (8x8)
     let grid = [];
@@ -338,6 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateScore(newScore) {
       score = newScore;
       scoreElement.textContent = score;
+      localStorage.setItem('score', score);
     }
   
     // Функция для переключения темы
@@ -402,6 +404,12 @@ document.addEventListener('DOMContentLoaded', () => {
       soundEnabled = savedSoundEnabled === 'true';
       soundButton.textContent = `Звук: ${soundEnabled ? 'Вкл' : 'Выкл'}`;
     }
+
+    // При загрузке страницы проверяем, есть ли сохраненная счёт в localStorage
+if (savedScore !== null) {
+    score = parseInt(savedScore);
+    scoreElement.textContent = score;
+}
   
     // Инициализация игры
     initializeGrid();
