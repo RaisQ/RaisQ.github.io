@@ -12,10 +12,39 @@ document.addEventListener('DOMContentLoaded', () => {
   let grid = [];
   let selectedCell = null;
   let score = 0;
-  let soundEnabled = true;
-  let backgroundVisible = true; // Изначально фон виден
 
-  let currentTheme = 'light'; // Текущая тема (light или dark)
+  // Инициализируем состояние звука из localStorage или устанавливаем значение по умолчанию true
+  let soundEnabled = localStorage.getItem('soundEnabled') !== 'false'; // true по умолчанию
+  const body = document.body;
+  const container = document.querySelector('.container');
+
+  // Применяем тему при загрузке страницы
+  let currentTheme = localStorage.getItem('theme') || 'light'; // Текущая тема (light или dark)
+  if (currentTheme === 'dark') {
+    body.classList.add('dark-theme');
+    container.classList.add('dark-theme');
+  } else {
+    body.classList.remove('dark-theme');
+    container.classList.remove('dark-theme');
+  }
+
+  let backgroundVisible = localStorage.getItem('backgroundVisible') !== 'false'; // Изначально фон виден
+  const toggleBackground = () => {
+    if (backgroundVisible) {
+      container.classList.remove('no-background');
+      toggleBackgroundButton.textContent = 'Скрыть фон';
+    } else {
+      container.classList.add('no-background');
+      toggleBackgroundButton.textContent = 'Показать фон';
+    }
+  }
+
+  // Применяем состояние видимости фона при загрузке страницы
+  toggleBackground();
+
+  // Обновляем текст кнопки звука при загрузке страницы
+  soundButton.textContent = `Звук: ${soundEnabled ? 'Вкл' : 'Выкл'}`;
+
 
   // Функция для инициализации игрового поля
   function initializeGrid() {
@@ -343,72 +372,40 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Функция для переключения темы
-  function toggleTheme() {
-      const body = document.body;
-      const container = document.querySelector('.container');
-      const cells = document.querySelectorAll('.cell');
-      const buttons = document.querySelectorAll('button');
-  
-      if (currentTheme === 'light') {
-        body.classList.add('dark-theme');
-        container.classList.add('dark-theme');
-        cells.forEach(cell => cell.classList.add('dark-theme'));
-        buttons.forEach(button => button.classList.add('dark-theme'));
-        currentTheme = 'dark';
-      } else {
-        body.classList.remove('dark-theme');
-        container.classList.remove('dark-theme');
-        cells.forEach(cell => cell.classList.remove('dark-theme'));
-        buttons.forEach(button => button.classList.remove('dark-theme'));
-        currentTheme = 'light';
-      }
-  
-      // Сохраняем тему в localStorage
-      localStorage.setItem('theme', currentTheme);
-  }
-
-  // Функция для переключения фона
-  function toggleBackground() {
-    const container = document.querySelector('.container');
-    backgroundVisible = !backgroundVisible;
-  
-    if (backgroundVisible) {
-      container.classList.remove('no-background');
-      toggleBackgroundButton.textContent = 'Скрыть фон';
-      localStorage.setItem('backgroundVisible', 'true');
-    } else {
-      container.classList.add('no-background');
-      toggleBackgroundButton.textContent = 'показать фон';
-      localStorage.setItem('backgroundVisible', 'false');
-    }
-  
-    playSound('button-click-sound'); // Воспроизводим звук клика
-  }
-
-  // Обработчик кнопки смены темы
   themeButton.addEventListener('click', () => {
     playSound('button-click-sound'); // Воспроизводим звук клика
-    toggleTheme();
+    body.classList.toggle('dark-theme');
+    container.classList.toggle('dark-theme');
+    currentTheme = body.classList.contains('dark-theme') ? 'dark' : 'light';
+    localStorage.setItem('theme', currentTheme);
+
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach(cell => {
+      if (currentTheme === 'dark') {
+        cell.classList.add('dark-theme');
+      } else {
+        cell.classList.remove('dark-theme');
+      }
+    });
   });
 
-  // Обработчик кнопки включения/выключения звука
+  // Функция для переключения фона
+  toggleBackgroundButton.addEventListener('click', () => {
+    playSound('button-click-sound'); // Воспроизводим звук клика
+    container.classList.toggle('no-background');
+    backgroundVisible = !container.classList.contains('no-background');
+    localStorage.setItem('backgroundVisible', backgroundVisible);
+    toggleBackground();
+  });
+
+  // Функция для переключения звука
   soundButton.addEventListener('click', () => {
     playSound('button-click-sound'); // Воспроизводим звук клика
     soundEnabled = !soundEnabled;
+    localStorage.setItem('soundEnabled', soundEnabled);
     soundButton.textContent = `Звук: ${soundEnabled ? 'Вкл' : 'Выкл'}`;
-    localStorage.setItem('soundEnabled', soundEnabled); // Сохраняем состояние звука в localStorage
   });
 
-  // Обработчик кнопки "Играть снова"
-  restartButton.addEventListener('click', () => {
-    playSound('button-click-sound'); // Воспроизводим звук клика
-    gameOverContainer.style.display = 'none';
-    initializeGrid();
-    updateScore(0);
-  });
-
-    // Обработчик кнопки переключения фона
-  toggleBackgroundButton.addEventListener('click', toggleBackground);
 
   // Функция для воспроизведения звука
   function playSound(soundId) {
@@ -419,19 +416,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // При загрузке страницы проверяем, нужно ли скрыть фон
-  const savedBackgroundVisible = localStorage.getItem('backgroundVisible');
-  if (savedBackgroundVisible === 'false') {
-    backgroundVisible = false;
-    toggleBackground(); // Скрываем фон
-  }
-
-  // При загрузке страницы проверяем, есть ли сохраненное состояние звука в localStorage
-  const savedSoundEnabled = localStorage.getItem('soundEnabled');
-  if (savedSoundEnabled !== null) {
-    soundEnabled = savedSoundEnabled === 'true';
-    soundButton.textContent = `Звук: ${soundEnabled ? 'Вкл' : 'Выкл'}`;
-  }
 
   // Инициализация игры
   initializeGrid();
