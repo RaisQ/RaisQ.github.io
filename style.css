@@ -27,7 +27,7 @@ body {
   justify-content: center; /* Центрируем по вертикали */
   align-items: center; /* Центрируем по горизонтали */
   width: 500px; /* Задайте желаемую ширину контейнера */
-  height: 580px; /* Задайте желаемую высоту контейнера */
+  height: 620px; /* Задайте желаемую высоту контейнера */
   /*background-color: rgba(240, 240, 240, 0.8); !* Светлый фон по умолчанию *!*/
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
@@ -162,10 +162,6 @@ button.dark-theme {
   width: 128px; /* Или другая подходящая ширина */
 }#sound-button {
   width: 108px; /* Или другая подходящая ширина */
-}
-#restart-button {
-  margin-top: 20px; /*  Отступ сверху */
-  margin-bottom: 25px;
 }
 
 .cell {
