@@ -48,21 +48,51 @@ document.addEventListener('DOMContentLoaded', () => {
   // Обновляем текст кнопки звука при загрузке страницы
   soundButton.textContent = `Звук: ${soundEnabled ? 'Вкл' : 'Выкл'}`;
 
+  function checkForMatchesOnInitialization() {
+    for (let row = 0; row < gridSize; row++) {
+        for (let col = 0; col < gridSize - 2; col++) {
+            if (
+                grid[row][col].value &&
+                grid[row][col].value === grid[row][col + 1].value &&
+                grid[row][col].value === grid[row][col + 2].value
+            ) {
+                return true; // Найдено горизонтальное совпадение
+            }
+        }
+    }
 
+    for (let col = 0; col < gridSize; col++) {
+        for (let row = 0; row < gridSize - 2; row++) {
+            if (
+                grid[row][col].value &&
+                grid[row][col].value === grid[row + 1][col].value &&
+                grid[row][col].value === grid[row + 2][col].value
+            ) {
+                return true; // Найдено вертикальное совпадение
+            }
+        }
+    }
+
+    return false; // Совпадений не найдено
+}
   // Функция для инициализации игрового поля
   function initializeGrid() {
-      grid = [];
-      for (let row = 0; row < gridSize; row++) {
-          grid[row] = [];
-          for (let col = 0; col < gridSize; col++) {
-              grid[row][col] = {
-                  value: Math.floor(Math.random() * 5) + 1, // Значения от 1 до 5
-                  selected: false,
-              };
-          }
-      }
-      renderBoard();
-  }
+    let hasInitialMatches;
+    do {
+        grid = [];
+        for (let row = 0; row < gridSize; row++) {
+            grid[row] = [];
+            for (let col = 0; col < gridSize; col++) {
+                grid[row][col] = {
+                    value: Math.floor(Math.random() * 5) + 1, // Значения от 1 до 5
+                    selected: false,
+                };
+            }
+        }
+        renderBoard(); // Отрисовываем доску, чтобы checkForMatches работал корректно
+        hasInitialMatches = checkForMatchesOnInitialization();
+    } while (hasInitialMatches);
+}
 
   // Функция для отрисовки игрового поля в DOM
   function renderBoard() {
