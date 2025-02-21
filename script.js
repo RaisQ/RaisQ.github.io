@@ -1,44 +1,32 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const boardElement = document.querySelector('.board');
-  const scoreElement = document.getElementById('score');
-  const themeButton = document.getElementById('theme-button');
-  const soundButton = document.getElementById('sound-button');
-  const gameOverContainer = document.querySelector('.game-over-container');
-  const finalScoreElement = document.getElementById('final-score');
-  const restartButton = document.getElementById('restart-button');
-  const toggleBackgroundButton = document.getElementById('toggle-background-button'); // Получаем кнопку
-
-  const gridSize = 8; // Размер поля (8x8)
-  let grid = [];
-  let selectedCell = null;
-
-  // Восстанавливаем очки из localStorage или устанавливаем значение по умолчанию 0
-  let score = parseInt(localStorage.getItem('score')) || 0;
-  scoreElement.textContent = score;
-
-  // Инициализируем состояние звука из localStorage или устанавливаем значение по умолчанию true
-  let soundEnabled = localStorage.getItem('soundEnabled') !== 'false'; // true по умолчанию
-  const body = document.body;
-  const container = document.querySelector('.container');
-
-  // Применяем тему при загрузке страницы
-  let currentTheme = localStorage.getItem('theme') || 'light'; // Текущая тема (light или dark)
-  if (currentTheme === 'dark') {
-      body.classList.add('dark-theme');
-      container.classList.add('dark-theme');
-  } else {
-      body.classList.remove('dark-theme');
-      container.classList.remove('dark-theme');
-  }
-
-  let backgroundVisible = localStorage.getItem('backgroundVisible') !== 'false'; // Изначально фон виден
-  const toggleBackground = () => {
-      if (backgroundVisible) {
-          container.classList.remove('no-background');
-          toggleBackgroundButton.textContent = 'Скрыть фон';
-      } else {
-          container.classList.add('no-background');
-          toggleBackgroundButton.textContent = 'Показать фон';
+    const boardElement = document.querySelector('.board');
+    const scoreElement = document.getElementById('score');
+    const themeButton = document.getElementById('theme-button');
+    const soundButton = document.getElementById('sound-button');
+    const gameOverContainer = document.querySelector('.game-over-container');
+    const finalScoreElement = document.getElementById('final-score');
+    const restartButton = document.getElementById('restart-button');
+    const savedScore = localStorage.getItem('score');
+  
+    const gridSize = 8; // Размер поля (8x8)
+    let grid = [];
+    let selectedCell = null;
+    let score = 0;
+    let soundEnabled = true;
+  
+    let currentTheme = 'light'; // Текущая тема (light или dark)
+  
+    // Функция для инициализации игрового поля
+    function initializeGrid() {
+      grid = [];
+      for (let row = 0; row < gridSize; row++) {
+        grid[row] = [];
+        for (let col = 0; col < gridSize; col++) {
+          grid[row][col] = {
+            value: Math.floor(Math.random() * 5) + 1, // Значения от 1 до 5
+            selected: false,
+          };
+        }
       }
   }
 
@@ -405,11 +393,36 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateScore(newScore) {
       score = newScore;
       scoreElement.textContent = score;
-      localStorage.setItem('score', score); // Сохраняем очки в localStorage
-  }
-
-  // Функция для переключения темы
-  themeButton.addEventListener('click', () => {
+      localStorage.setItem('score', score);
+    }
+  
+    // Функция для переключения темы
+    function toggleTheme() {
+      const body = document.body;
+      const container = document.querySelector('.container');
+      const cells = document.querySelectorAll('.cell');
+      const buttons = document.querySelectorAll('button');
+  
+      if (currentTheme === 'light') {
+        body.classList.add('dark-theme');
+        container.classList.add('dark-theme');
+        cells.forEach(cell => cell.classList.add('dark-theme'));
+        buttons.forEach(button => button.classList.add('dark-theme'));
+        currentTheme = 'dark';
+      } else {
+        body.classList.remove('dark-theme');
+        container.classList.remove('dark-theme');
+        cells.forEach(cell => cell.classList.remove('dark-theme'));
+        buttons.forEach(button => button.classList.remove('dark-theme'));
+        currentTheme = 'light';
+      }
+  
+      // Сохраняем тему в localStorage
+      localStorage.setItem('theme', currentTheme);
+    }
+  
+    // Обработчик кнопки смены темы
+    themeButton.addEventListener('click', () => {
       playSound('button-click-sound'); // Воспроизводим звук клика
       body.classList.toggle('dark-theme');
       container.classList.toggle('dark-theme');
@@ -458,11 +471,49 @@ document.addEventListener('DOMContentLoaded', () => {
       playSound('button-click-sound'); // Воспроизводим звук клика
       gameOverContainer.style.display = 'none';
       initializeGrid();
-      updateScore(0); // Сбрасываем очки
-      localStorage.setItem('score', 0);
+      updateScore(0);
+    });
+  
+    // Функция для воспроизведения звука
+    function playSound(soundId) {
+      if (soundEnabled) {
+        const sound = document.getElementById(soundId);
+        sound.currentTime = 0; // Перематываем звук в начало
+        sound.play();
+      }
+    }
+  
+    // При загрузке страницы проверяем, есть ли сохраненное состояние звука в localStorage
+    const savedSoundEnabled = localStorage.getItem('soundEnabled');
+    if (savedSoundEnabled !== null) {
+      soundEnabled = savedSoundEnabled === 'true';
+      soundButton.textContent = `Звук: ${soundEnabled ? 'Вкл' : 'Выкл'}`;
+    }
+
+    // При загрузке страницы проверяем, есть ли сохраненная счёт в localStorage
+if (savedScore !== null) {
+    score = parseInt(savedScore);
+    scoreElement.textContent = score;
+}
+  
+    // Инициализация игры
+    initializeGrid();
   });
 
 
-  // Инициализация игры
-  initializeGrid();
-});
+    // Добавление меню бара
+  function toggleDropdown() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        for (var i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+        }
+    }
+  }
