@@ -225,66 +225,192 @@ button.dark-theme {
   background-color: darkmagenta;
 }
 
+/* Стили для выпадающего списка */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.dropdown-content button {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  border-radius: 5px;
+}
+
+.dropdown-content button:hover {
+  background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Стили для десктопа */
+.desktop-button {
+  /* Ваши стили для кнопок на десктопе */
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 0 10px;
+}
+
+.desktop-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 10px;
+}
+
+/* Скрываем выпадающий список на десктопе */
+.mobile-dropdown {
+  display: none;
+}
+
 /* Стили для мобильных устройств */
 @media (max-width: 600px) {
   body {
-    font-size: 14px; /* Уменьшаем размер шрифта */
+    font-size: 14px;
   }
 
   .container {
-    width: auto; /* Занимаем всю ширину экрана */
-    height: auto; /* Высота автоматически подстраивается под содержимое */
-    padding: 10px; /* Уменьшаем внутренние отступы */
+    width: auto;
+    height: auto;
+    padding: 10px;
   }
 
   .board {
-    grid-template-columns: repeat(8, 40px); /* Уменьшаем размер ячеек */
-    grid-gap: 1px; /* Уменьшаем расстояние между ячейками */
+    grid-template-columns: repeat(8, 40px);
+    grid-gap: 1px;
   }
 
   .cell {
-    width: 40px; /* Уменьшаем размер ячеек */
-    height: 40px; /* Уменьшаем размер ячеек */
-    font-size: 0; /* Скрываем текст */
+    width: 40px;
+    height: 40px;
+    font-size: 0;
   }
 
   button {
-    padding: 8px 16px; /* Уменьшаем размер кнопок */
-    margin: 5px; /* Уменьшаем отступы между кнопками */
+    padding: 8px 16px;
+    margin: 5px;
   }
 
   .controls {
-    flex-direction: column; /* Располагаем кнопки в колонку */
-    align-items: center; /* Центрируем кнопки */
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Скрываем кнопки для десктопа */
+  .desktop-buttons {
+    display: none;
+  }
+
+  /* Показываем выпадающий список на мобильных */
+  .mobile-dropdown {
+    display: inline-block;
+  }
+
+  /* Стили для выпадающего списка */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dropdown-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 5px;
+    padding: 10px;
+    right: 0; /* Выравниваем по правому краю */
+  }
+
+  .dropdown-content button {
+    color: black;
+    padding: 8px 16px;
+    text-decoration: none;
+    display: block;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    border-radius: 5px;
+  }
+
+  .dropdown-content button:hover {
+    background-color: #ddd;
+  }
+
+  .dropdown:hover .dropdown-content {
+    display: block;
   }
 
   .top-buttons {
-    flex-direction: column; /* Располагаем кнопки в колонку */
-    width: 100%; /* Занимаем всю ширину .controls */
-    margin-bottom: 10px; /* Уменьшаем отступ до кнопки "Играть Снова" */
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 10px;
   }
 
   .game-over-container {
-    padding: 20px; /* Уменьшаем внутренние отступы */
+    padding: 20px;
   }
 }
 
-/* Остальные стили остаются без изменений */
-
 @media (max-width: 350px) {
   .board {
-    grid-template-columns: repeat(8, 25px); /* Уменьшаем размер ячеек */
-    grid-gap: 1px; /* Уменьшаем расстояние между ячейками */
+    grid-template-columns: repeat(8, 25px);
+    grid-gap: 1px;
   }
 
   .cell {
-    width: 20px; /* Уменьшаем размер ячеек */
-    height: 20px; /* Уменьшаем размер ячеек */
-    font-size: 0; /* Скрываем текст */
+    width: 20px;
+    height: 20px;
+    font-size: 0;
   }
 
   button {
-    padding: 8px 10px; /* Уменьшаем размер кнопок */
-    margin: 5px; /* Уменьшаем отступы между кнопками */
+    padding: 8px 10px;
+    margin: 5px;
   }
 }
