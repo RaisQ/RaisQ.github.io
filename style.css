@@ -224,3 +224,49 @@ button.dark-theme {
 .dark-theme .ball-5 {
   background-color: darkmagenta;
 }
+
+/* Стили для мобильных устройств */
+@media (max-width: 600px) {
+  body {
+    font-size: 14px; /* Уменьшаем размер шрифта */
+  }
+
+  .container {
+    width: 100%; /* Занимаем всю ширину экрана */
+    height: auto; /* Высота автоматически подстраивается под содержимое */
+    padding: 10px; /* Уменьшаем внутренние отступы */
+  }
+
+  .board {
+    grid-template-columns: repeat(8, 40px); /* Уменьшаем размер ячеек */
+    grid-gap: 1px; /* Уменьшаем расстояние между ячейками */
+  }
+
+  .cell {
+    width: 40px; /* Уменьшаем размер ячеек */
+    height: 40px; /* Уменьшаем размер ячеек */
+    font-size: 0; /* Скрываем текст */
+  }
+
+  button {
+    padding: 8px 16px; /* Уменьшаем размер кнопок */
+    margin: 5px; /* Уменьшаем отступы между кнопками */
+  }
+
+  .controls {
+    flex-direction: column; /* Располагаем кнопки в колонку */
+    align-items: center; /* Центрируем кнопки */
+  }
+
+  .top-buttons {
+    flex-direction: column; /* Располагаем кнопки в колонку */
+    width: 100%; /* Занимаем всю ширину .controls */
+    margin-bottom: 10px; /* Уменьшаем отступ до кнопки "Играть Снова" */
+  }
+
+  .game-over-container {
+    padding: 20px; /* Уменьшаем внутренние отступы */
+  }
+}
+
+/* Остальные стили остаются без изменений */
