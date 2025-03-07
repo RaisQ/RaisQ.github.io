@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const boardElement = document.querySelector('.board');
     const scoreElement = document.getElementById('score');
+    const leaderboardBody = document.getElementById('leaderboard-body');
   
     // Получаем элементы кнопок для десктопа
     const themeButton = document.getElementById('theme-button');
@@ -16,6 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
   
     const gameOverContainer = document.querySelector('.game-over-container');
     const finalScoreElement = document.getElementById('final-score');
+
+    // Загружаем таблицу лидеров из localStorage при загрузке страницы
+    let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+  renderLeaderboard(leaderboard);
   
     const gridSize = 8; // Размер поля (8x8)
     let grid = [];
@@ -108,8 +113,27 @@ document.addEventListener('DOMContentLoaded', () => {
         renderBoard(); // Отрисовываем доску, чтобы checkForMatches работал корректно
         hasInitialMatches = checkForMatchesOnInitialization();
       } while (hasInitialMatches);
+      // Отрисовываем таблицу лидеров при инициализации игры
+      let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+
+    // Генерируем случайные записи, только если таблица пуста
+    if (leaderboard.length === 0) {
+        for (let i = 1; i <= 7; i++) {
+            const name = generateRandomName();
+            const score = Math.floor(Math.random() * 10000);
+            leaderboard.push({ name: name, score: score });
+        }
+
+        // Сохраняем случайные записи в localStorage
+        localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
     }
-  
+
+    // Сортируем таблицу лидеров
+    leaderboard.sort((a, b) => b.score - a.score);
+
+    // Отрисовываем таблицу лидеров при инициализации игры
+    renderLeaderboard(leaderboard);
+    }  
     // Функция для отрисовки игрового поля в DOM
     function renderBoard() {
       boardElement.innerHTML = ''; // Очищаем поле
@@ -417,11 +441,78 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('score', 0);
     }
   
+    function updateLeaderboard(leaderboard, playerName, score) {
+      // Сортируем таблицу лидеров по убыванию очков (от большего к меньшему)
+      leaderboard.sort((a, b) => b.score - a.score);
+    
+      // Проверяем, есть ли уже игрок в таблице лидеров
+      let playerIndex = leaderboard.findIndex(entry => entry.name === playerName);
+    
+      if (playerIndex !== -1) {
+        // Игрок уже есть в таблице
+        leaderboard[playerIndex].score = score;
+    
+        // Перемещаем игрока на правильную позицию (если нужно)
+        while (playerIndex > 0 && leaderboard[playerIndex].score > leaderboard[playerIndex - 1].score) {
+          // Меняем местами текущую запись и предыдущую
+          [leaderboard[playerIndex], leaderboard[playerIndex - 1]] = [leaderboard[playerIndex - 1], leaderboard[playerIndex]];
+          playerIndex--;
+        }
+      } else {
+        // Игрока нет в таблице
+        if (leaderboard.length < 7) {
+          // В таблице есть место, добавляем игрока
+          leaderboard.push({ name: playerName, score: score });
+        } else if (score < leaderboard[leaderboard.length - 1].score) { //было score > ...
+          // Заменяем последнего игрока, если у нового игрока меньше очков //изменил условие
+          leaderboard[leaderboard.length - 1] = { name: playerName, score: score };
+        }
+      }
+    
+      // Снова сортируем таблицу лидеров
+      leaderboard.sort((a, b) => b.score - a.score); //изменил сортировку
+    
+      // Если в таблице больше 7 записей, удаляем лишние
+      if (leaderboard.length > 7) {
+        leaderboard.length = 7;
+      }
+    }
+    
+    function renderLeaderboard(leaderboard) {
+      const leaderboardBody = document.getElementById('leaderboard-body');
+      leaderboardBody.innerHTML = ''; // Очищаем таблицу
+    
+      for (let i = 0; i < leaderboard.length; i++) {
+        const entry = leaderboard[i];
+        const row = createLeaderboardEntry(i + 1, entry.name, entry.score);
+        leaderboardBody.appendChild(row);
+      }
+    }
+
     // Функция для обновления счета
     function updateScore(newScore) {
       score = newScore;
       scoreElement.textContent = score;
-      localStorage.setItem('score', score); // Сохраняем очки в localStorage
+      localStorage.setItem('score', score);
+    
+      // Получаем текущую таблицу лидеров из localStorage
+      let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+    
+      // Получаем имя игрока (или запрашиваем его, если его еще нет)
+      let playerName = localStorage.getItem('playerName');
+      if (!playerName) {
+        playerName = prompt("Пожалуйста, введите ваше имя:");
+        localStorage.setItem('playerName', playerName);
+      }
+    
+      // Проверяем, нужно ли добавить/обновить запись в таблице лидеров
+      updateLeaderboard(leaderboard, playerName, score);
+    
+      // Сохраняем обновленную таблицу лидеров в localStorage
+      localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+    
+      // Отрисовываем таблицу лидеров
+      renderLeaderboard(leaderboard);
     }
   
     // Функция для переключения темы
@@ -492,7 +583,42 @@ document.addEventListener('DOMContentLoaded', () => {
     soundButtonMobile.addEventListener('click', toggleSound);
     restartButtonMobile.addEventListener('click', restartTheGame);
   
-  
+    
+      
+    
+      // Функция для генерации случайного имени
+      function generateRandomName() {
+        const names = ['Александр', 'Елена', 'Дмитрий', 'Ольга', 'Сергей', 'Анна', 'Игорь', 'Наталья'];
+        const surnames = ['Иванов', 'Петров', 'Сидоров', 'Смирнов', 'Кузнецов', 'Попов', 'Васильев', 'Федоров'];
+        return names[Math.floor(Math.random() * names.length)] + ' ' + surnames[Math.floor(Math.random() * surnames.length)];
+      }
+    
+      // Функция для создания записи таблицы лидеров
+      function createLeaderboardEntry(rank, name, score) {
+        const row = document.createElement('tr');
+        const rankCell = document.createElement('td');
+        const nameCell = document.createElement('td');
+        const scoreCell = document.createElement('td');
+    
+        rankCell.textContent = rank;
+        nameCell.textContent = name;
+        scoreCell.textContent = score;
+    
+        row.appendChild(rankCell);
+        row.appendChild(nameCell);
+        row.appendChild(scoreCell);
+    
+        return row;
+      }
+    
+      // Генерируем 7 случайных записей
+      for (let i = 1; i <= 70; i++) {
+        const name = generateRandomName();
+        const score = Math.floor(Math.random() * 10000); // Случайные очки до 10000
+        const entry = createLeaderboardEntry(i, name, score);
+        leaderboardBody.appendChild(entry);
+      }
+    ;
     // Инициализация игры
     initializeGrid();
   });

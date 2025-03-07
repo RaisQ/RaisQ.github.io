@@ -12,7 +12,24 @@
   <audio id="ball-remove-sound" src="./sounds/ball-remove.mp3" preload="auto"></audio>
 </head>
 <body>
-
+  <div class="wrapper">
+    <div class="leaderboard">
+      <h2>Таблица лидеров</h2>
+      <div class="leaderboard-table-container">  <!-- Оборачиваем таблицу -->
+        <table>
+          <thead>
+            <tr>
+              <th>Место</th>
+              <th>Имя</th>
+              <th>Очки</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body">
+            <!-- Здесь будут вставлены записи таблицы -->
+          </tbody>
+        </table>
+      </div>
+    </div>
   <div class="container">
     <div class="score-container">
       Счет: <span id="score">0</span>
