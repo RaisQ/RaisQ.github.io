@@ -143,63 +143,60 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   
     // Функция для обработки клика по ячейке
-    function handleCellClick(event) {
-      const row = parseInt(event.target.dataset.row);
-      const col = parseInt(event.target.dataset.col);
+async function handleCellClick(event) {
+  const row = parseInt(event.target.dataset.row);
+  const col = parseInt(event.target.dataset.col);
 
-      if (selectedCell === null) {
-          // Первый клик
-          selectedCell = { row, col };
-          grid[row][col].selected = true;
-          playSound('ball-select-sound');
-      } else {
-          // Второй клик
-          const firstCell = selectedCell;
-          selectedCell = null;
+  if (selectedCell === null) {
+      // Первый клик
+      selectedCell = { row, col };
+      grid[row][col].selected = true;
+      playSound('ball-select-sound');
+  } else {
+      // Второй клик
+      const firstCell = selectedCell;
+      selectedCell = null;
 
-          // Проверка на соседство
-          const isAdjacent =
-              (Math.abs(row - firstCell.row) === 1 && col === firstCell.col) ||
-              (Math.abs(col - firstCell.col) === 1 && row === firstCell.row);
+      // Проверка на соседство
+      const isAdjacent =
+          (Math.abs(row - firstCell.row) === 1 && col === firstCell.col) ||
+          (Math.abs(col - firstCell.col) === 1 && row === firstCell.row);
 
-          if (isAdjacent) {
-              // Меняем шарики местами
-              swapCells(firstCell, { row, col });
+      if (isAdjacent) {
+          // Меняем шарики местами
+          swapCells(firstCell, { row, col });
 
-              // Проверяем, был ли ход успешным (привел ли к удалению шаров)
-              const hasMatches = checkForMatches(); // Проверяем, есть ли совпадения
-              if (!hasMatches) {
-                  // Если ход не привел к удалению шаров, увеличиваем счетчик неудачных ходов
-                  moveCount++;
-                  updateRedBalls(); // Обновляем цвет шаров
-              } else {
-                  // Если ход привел к удалению шаров, сбрасываем счетчик неудачных ходов
-                  moveCount = 0;
-                  resetRedBalls(); // Возвращаем все шары к красному цвету
+          // Проверяем, был ли ход успешным (привел ли к удалению шаров)
+          const hasMatches = await checkForMatches(); // Ожидаем завершения проверки совпадений
+
+          // Если совпадений нет, увеличиваем счетчик неудачных ходов
+          if (!hasMatches) {
+              moveCount++;
+              updateRedBalls(); // Обновляем цвет шаров
+
+              // Проверяем, все ли шары стали серыми
+              if (moveCount >= redBalls.length) {
+                  endGame(); // Завершаем игру
               }
-          } else {
-              // Клик на отдаленную ячейку - просто выбираем ее
-              grid[firstCell.row][firstCell.col].selected = false;
-              grid[row][col].selected = true;
-              selectedCell = { row, col };
-              playSound('ball-select-sound');
           }
+          // Если ход успешный, ничего не делаем с красными шарами
+      } else {
+          // Клик на отдаленную ячейку - просто выбираем ее
+          grid[firstCell.row][firstCell.col].selected = false;
+          grid[row][col].selected = true;
+          selectedCell = { row, col };
+          playSound('ball-select-sound');
       }
-
-      renderBoard();
   }
 
+  renderBoard();
+}
+  
   function updateRedBalls() {
     if (moveCount > 0 && moveCount <= redBalls.length) {
         // Меняем цвет шара на серый
         redBalls[moveCount - 1].classList.remove('red-ball');
         redBalls[moveCount - 1].classList.add('gray-ball');
-    }
-
-    // Если все шары стали серыми, сбрасываем счетчик
-    if (moveCount > redBalls.length) {
-        moveCount = 0;
-        resetRedBalls();
     }
 }
 
@@ -210,6 +207,22 @@ function resetRedBalls() {
         ball.classList.add('red-ball');
     });
 }
+
+// Функция для завершения игры
+function endGame() {
+    gameOverContainer.style.display = 'flex'; // Показываем уведомление
+}
+
+ // Функция для перезапуска игры
+ function restartGame() {
+  gameOverContainer.style.display = 'none'; // Скрываем уведомление
+  moveCount = 0; // Сбрасываем счетчик неудачных ходов
+  resetRedBalls(); // Возвращаем все шары к красному цвету
+  initializeGrid(); // Перезапускаем игровое поле
+  updateScore(0); // Сбрасываем счет
+}
+
+restartButton.addEventListener('click', restartGame);
   
     // Функция для обмена двух ячеек местами
     function swapCells(cell1, cell2) {
@@ -222,67 +235,69 @@ function resetRedBalls() {
   
       playSound('ball-swap-sound'); // Воспроизводим звук перетаскивания шаров
       renderBoard(); // Обновляем доску после обмена (важно для анимации)
-      checkForMatches();
-    }
+  }
+  
   
     // Функция для проверки на совпадения
-    function checkForMatches() {
+    async function checkForMatches() {
       let matches = [];
   
       // Горизонтальные совпадения
       for (let row = 0; row < gridSize; row++) {
-        for (let col = 0; col < gridSize - 2; col++) {
-          if (
-            grid[row][col].value &&
-            grid[row][col].value === grid[row][col + 1].value &&
-            grid[row][col].value === grid[row][col + 2].value
-          ) {
-            let matchLength = 3;
-            while (
-              col + matchLength < gridSize &&
-              grid[row][col].value === grid[row][col + matchLength].value
-            ) {
-              matchLength++;
-            }
-            for (let i = 0; i < matchLength; i++) {
-              matches.push({ row, col: col + i });
-            }
-            col += matchLength - 1;
+          for (let col = 0; col < gridSize - 2; col++) {
+              if (
+                  grid[row][col].value &&
+                  grid[row][col].value === grid[row][col + 1].value &&
+                  grid[row][col].value === grid[row][col + 2].value
+              ) {
+                  let matchLength = 3;
+                  while (
+                      col + matchLength < gridSize &&
+                      grid[row][col].value === grid[row][col + matchLength].value
+                  ) {
+                      matchLength++;
+                  }
+                  for (let i = 0; i < matchLength; i++) {
+                      matches.push({ row, col: col + i });
+                  }
+                  col += matchLength - 1;
+              }
           }
-        }
       }
   
       // Вертикальные совпадения
       for (let col = 0; col < gridSize; col++) {
-        for (let row = 0; row < gridSize - 2; row++) {
-          if (
-            grid[row][col].value &&
-            grid[row][col].value === grid[row + 1][col].value &&
-            grid[row][col].value === grid[row + 2][col].value
-          ) {
-            let matchLength = 3;
-            while (
-              row + matchLength < gridSize &&
-              grid[row][col].value === grid[row + matchLength][col].value
-            ) {
-              matchLength++;
-            }
-            for (let i = 0; i < matchLength; i++) {
-              matches.push({ row: row + i, col });
-            }
-            row += matchLength - 1;
+          for (let row = 0; row < gridSize - 2; row++) {
+              if (
+                  grid[row][col].value &&
+                  grid[row][col].value === grid[row + 1][col].value &&
+                  grid[row][col].value === grid[row + 2][col].value
+              ) {
+                  let matchLength = 3;
+                  while (
+                      row + matchLength < gridSize &&
+                      grid[row][col].value === grid[row + matchLength][col].value
+                  ) {
+                      matchLength++;
+                  }
+                  for (let i = 0; i < matchLength; i++) {
+                      matches.push({ row: row + i, col });
+                  }
+                  row += matchLength - 1;
+              }
           }
-        }
       }
   
       if (matches.length > 0) {
-        removeMatches(matches);
+          await removeMatches(matches); // Ожидаем завершения удаления совпадений
+          return true; // Совпадения найдены, ход успешный
       } else {
-        if (!hasPossibleMoves()) {
-          endGame();
-        }
+          if (!hasPossibleMoves()) {
+              endGame();
+          }
+          return false; // Совпадений нет, ход неудачный
       }
-    }
+  }
   
     // Функция для очистки класса шара
     function clearBallClass(cellElement) {
