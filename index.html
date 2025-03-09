@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>3 в ряд</title>
   <link rel="icon" href="./images/i.ico">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./style.css">
   <audio id="button-click-sound" src="./sounds/button-click.mp3" preload="auto"></audio>
   <audio id="ball-select-sound" src="./sounds/ball-select.mp3" preload="auto"></audio>
   <audio id="ball-swap-sound" src="./sounds/ball-swap.mp3" preload="auto"></audio>
@@ -35,8 +35,17 @@
       Счет: <span id="score">0</span>
     </div>
 
-    <div class="board">
-      <!-- Игровое поле будет сгенерировано JavaScript -->
+    <div class="main-content">
+      <div class="board">
+        <!-- Игровое поле будет сгенерировано JavaScript -->
+      </div>
+
+      <!-- Новый элемент с тремя красными шарами -->
+      <div class="red-balls-container">
+        <div class="red-ball"></div>
+        <div class="red-ball"></div>
+        <div class="red-ball"></div>
+      </div>
     </div>
 
     <div class="controls">
@@ -67,7 +76,7 @@
       <p>Ваш счет: <span id="final-score">0</span></p>
       <button id="restart-button">Играть снова</button>
     </div>
-  </div>
+  
 
   <script src="script.js"></script>
 </body>

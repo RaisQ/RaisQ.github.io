@@ -18,6 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameOverContainer = document.querySelector('.game-over-container');
     const finalScoreElement = document.getElementById('final-score');
 
+    // Жизни игрока
+    const redBallsContainer = document.querySelector('.red-balls-container');
+    const redBalls = document.querySelectorAll('.red-ball');
+
+    let moveCount = 0;
+
     // Загружаем таблицу лидеров из localStorage при загрузке страницы
     let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
   renderLeaderboard(leaderboard);
@@ -184,6 +190,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isAdjacent) {
           // Меняем шарики местами
           swapCells(firstCell, { row, col });
+          
+              // Проверяем, был ли ход успешным (привел ли к удалению шаров)
+              const hasMatches = checkForMatches(); // Проверяем, есть ли совпадения
+              if (!hasMatches) {
+                  // Если ход не привел к удалению шаров, увеличиваем счетчик неудачных ходов
+                  moveCount++;
+                  updateRedBalls(); // Обновляем цвет шаров
+              } else {
+                  // Если ход привел к удалению шаров, сбрасываем счетчик неудачных ходов
+                  moveCount = 0;
+                  resetRedBalls(); // Возвращаем все шары к красному цвету
+              }
         } else {
           // Клик на отдаленную ячейку - просто выбираем ее
           grid[firstCell.row][firstCell.col].selected = false;
@@ -194,8 +212,30 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   
       renderBoard();
+
     }
+
+    function updateRedBalls() {
+      if (moveCount > 0 && moveCount <= redBalls.length) {
+          // Меняем цвет шара на серый
+          redBalls[moveCount - 1].classList.remove('red-ball');
+          redBalls[moveCount - 1].classList.add('gray-ball');
+      }
   
+      // Если все шары стали серыми, сбрасываем счетчик
+      if (moveCount > redBalls.length) {
+          moveCount = 0;
+          resetRedBalls();
+      }
+  }
+  
+  // Функция для сброса цвета шаров
+  function resetRedBalls() {
+      redBalls.forEach(ball => {
+          ball.classList.remove('gray-ball');
+          ball.classList.add('red-ball');
+      });
+    }
     // Функция для обмена двух ячеек местами
     function swapCells(cell1, cell2) {
       const tempValue = grid[cell1.row][cell1.col].value;
