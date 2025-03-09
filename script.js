@@ -104,6 +104,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // Функция для инициализации игрового поля
     function initializeGrid() {
+      //Сбрасываем жизни
+      moveCount = 0;
+      resetRedBalls();
+  
       let hasInitialMatches;
       do {
         grid = [];
@@ -121,25 +125,25 @@ document.addEventListener('DOMContentLoaded', () => {
       } while (hasInitialMatches);
       // Отрисовываем таблицу лидеров при инициализации игры
       let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-
-    // Генерируем случайные записи, только если таблица пуста
-    if (leaderboard.length === 0) {
-        for (let i = 1; i <= 7; i++) {
-            const name = generateRandomName();
-            const score = Math.floor(Math.random() * 10000);
-            leaderboard.push({ name: name, score: score });
-        }
-
-        // Сохраняем случайные записи в localStorage
-        localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-    }
-
-    // Сортируем таблицу лидеров
-    leaderboard.sort((a, b) => b.score - a.score);
-
-    // Отрисовываем таблицу лидеров при инициализации игры
-    renderLeaderboard(leaderboard);
-    }  
+  
+      // Генерируем случайные записи, только если таблица пуста
+      if (leaderboard.length === 0) {
+          for (let i = 1; i <= 7; i++) {
+              const name = generateRandomName();
+              const score = Math.floor(Math.random() * 10000);
+              leaderboard.push({ name: name, score: score });
+          }
+  
+          // Сохраняем случайные записи в localStorage
+          localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+      }
+  
+      // Сортируем таблицу лидеров
+      leaderboard.sort((a, b) => b.score - a.score);
+  
+      // Отрисовываем таблицу лидеров при инициализации игры
+      renderLeaderboard(leaderboard);
+    } 
     // Функция для отрисовки игрового поля в DOM
     function renderBoard() {
       boardElement.innerHTML = ''; // Очищаем поле
@@ -198,8 +202,8 @@ document.addEventListener('DOMContentLoaded', () => {
             moveCount++;
             updateRedBalls();
           } else {
-            moveCount = 0;
-            resetRedBalls();
+            // moveCount = 0;
+            // resetRedBalls();
           }
     
           if (moveCount >= redBalls.length) {
