@@ -144,12 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
           // Если шар отмечен как взрывающийся, запускаем анимацию
           if (grid[row][col].exploding) {
             cell.classList.add('explosion');
-    
-            // Удаляем класс после завершения анимации (0.5 сек)
-            setTimeout(() => {
-              grid[row][col].exploding = false;
-              cell.classList.remove('explosion');
-            }, 500);
           }
     
           cell.addEventListener('click', handleCellClick);
@@ -339,15 +333,14 @@ restartButton.addEventListener('click', restartGame);
         grid[match.row][match.col].value = null;
       });
     
-      renderBoard();
-    
-      playSound('ball-remove-sound'); // Воспроизводим звук исчезновения шаров
+      // Не вызываем renderBoard здесь, чтобы не перезаписать explosion
+      playSound('ball-remove-sound');
       await new Promise(resolve => setTimeout(resolve, 500)); // Ждем окончания анимации взрыва
     
       let newScore = calculateScore(removedCount);
       updateScore(score + newScore);
     
-      applyGravity();
+      applyGravity(); // applyGravity вызовет renderBoard после завершения анимации
     }
   
     // Функция для применения "гравитации" (сдвига шариков вниз)

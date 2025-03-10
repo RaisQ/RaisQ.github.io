@@ -1,7 +1,7 @@
 body {
   font-family: sans-serif;
   /*background-color: #f0f0f0; !* Светлая тема по умолчанию *!*/
-  background-image: url('images/fon.jpg'); /* Добавляем фон */
+  background-image: url('/images/fon.jpg'); /* Добавляем фон */
   background-size: cover; /* Масштабируем изображение, чтобы покрыть всю область */
   background-repeat: no-repeat; /* Запрещаем повторение изображения */
   background-attachment: fixed; /* Фиксируем фон при прокрутке */
