@@ -117,30 +117,47 @@ document.addEventListener('DOMContentLoaded', () => {
   
     // Функция для отрисовки игрового поля в DOM
     function renderBoard() {
-      boardElement.innerHTML = ''; // Очищаем поле
+      boardElement.innerHTML = ''; // Очищаем игровое поле
+    
       for (let row = 0; row < gridSize; row++) {
         for (let col = 0; col < gridSize; col++) {
           const cell = document.createElement('div');
           cell.classList.add('cell');
           cell.dataset.row = row;
           cell.dataset.col = col;
-  
-          // Добавляем класс для шара
-          cell.classList.add(`ball-${grid[row][col].value}`);
-  
+    
+          // Добавляем класс цвета шара
+          if (grid[row][col].value) {
+            cell.classList.add(`ball-${grid[row][col].value}`);
+          }
+    
+          // Выделенный элемент (если выбран)
           if (grid[row][col].selected) {
             cell.classList.add('selected');
           }
-  
+    
+          // Применяем темную тему, если она включена
           if (currentTheme === 'dark') {
             cell.classList.add('dark-theme');
           }
-  
+    
+          // Если шар отмечен как взрывающийся, запускаем анимацию
+          if (grid[row][col].exploding) {
+            cell.classList.add('explosion');
+    
+            // Удаляем класс после завершения анимации (0.5 сек)
+            setTimeout(() => {
+              grid[row][col].exploding = false;
+              cell.classList.remove('explosion');
+            }, 500);
+          }
+    
           cell.addEventListener('click', handleCellClick);
           boardElement.appendChild(cell);
         }
       }
     }
+    
   
     // Функция для обработки клика по ячейке
 async function handleCellClick(event) {
@@ -311,25 +328,25 @@ restartButton.addEventListener('click', restartGame);
       let removedCount = matches.length;
       matches.forEach(match => {
         const cellElement = document.querySelector(`.board .cell[data-row="${match.row}"][data-col="${match.col}"]`);
-  
-        // Добавляем класс "to-remove" перед удалением класса шара
-        cellElement.classList.add('to-remove');
-  
+    
+        // Добавляем класс "explosion" для анимации взрыва
+        cellElement.classList.add('explosion');
+    
         // Удаляем класс шара
         clearBallClass(cellElement);
-  
+    
         // Обнуляем значение в сетке
         grid[match.row][match.col].value = null;
       });
-  
+    
       renderBoard();
-  
+    
       playSound('ball-remove-sound'); // Воспроизводим звук исчезновения шаров
-      await new Promise(resolve => setTimeout(resolve, 300)); // Ждем окончания анимации
-  
+      await new Promise(resolve => setTimeout(resolve, 500)); // Ждем окончания анимации взрыва
+    
       let newScore = calculateScore(removedCount);
       updateScore(score + newScore);
-  
+    
       applyGravity();
     }
   
