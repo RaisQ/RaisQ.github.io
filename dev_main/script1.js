@@ -7,6 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let moveCount = 0;
   
+    // Восстанавливаем количество жизней из localStorage или устанавливаем значение по умолчанию
+    let lives = parseInt(localStorage.getItem('lives')) || redBalls.length;
+
+
     // Получаем элементы кнопок для десктопа
     const themeButton = document.getElementById('theme-button');
     const toggleBackgroundButton = document.getElementById('toggle-background-button');
@@ -96,6 +100,13 @@ document.addEventListener('DOMContentLoaded', () => {
   
       return false; // Совпадений не найдено
     }
+
+    function updateLives(newLives) {
+      lives = newLives;
+      localStorage.setItem('lives', lives); // Сохраняем количество жизней в localStorage
+      updateRedBalls(); // Обновляем отображение красных шаров
+    }
+
     // Функция для инициализации игрового поля
     function initializeGrid() {
       let hasInitialMatches;
@@ -182,13 +193,14 @@ async function handleCellClick(event) {
 
           // Если совпадений нет, увеличиваем счетчик неудачных ходов
           if (!hasMatches) {
-              moveCount++;
-              updateRedBalls(); // Обновляем цвет шаров
-
-              // Проверяем, все ли шары стали серыми
-              if (moveCount >= redBalls.length) {
-                  endGame(); // Завершаем игру
-              }
+            moveCount++;
+            updateLives(lives - 1); // Уменьшаем количество жизней
+            updateRedBalls(); // Обновляем цвет шаров
+          
+            // Проверяем, все ли шары стали серыми
+            if (lives <= 0) {
+              endGame(); // Завершаем игру
+            }
           }
           // Если ход успешный, ничего не делаем с красными шарами
       } else {
@@ -203,12 +215,16 @@ async function handleCellClick(event) {
   renderBoard();
 }
   
-  function updateRedBalls() {
-    if (moveCount > 0 && moveCount <= redBalls.length) {
-        // Меняем цвет шара на серый
-        redBalls[moveCount - 1].classList.remove('red-ball');
-        redBalls[moveCount - 1].classList.add('gray-ball');
+function updateRedBalls() {
+  redBalls.forEach((ball, index) => {
+    if (index < lives) {
+      ball.classList.remove('gray-ball');
+      ball.classList.add('red-ball');
+    } else {
+      ball.classList.remove('red-ball');
+      ball.classList.add('gray-ball');
     }
+  });
 }
 
 // Функция для сброса цвета шаров
@@ -228,7 +244,7 @@ function endGame() {
  function restartGame() {
   gameOverContainer.style.display = 'none'; // Скрываем уведомление
   moveCount = 0; // Сбрасываем счетчик неудачных ходов
-  resetRedBalls(); // Возвращаем все шары к красному цвету
+  updateLives(redBalls.length); // Восстанавливаем количество жизней
   initializeGrid(); // Перезапускаем игровое поле
   updateScore(0); // Сбрасываем счет
 }
@@ -569,4 +585,5 @@ restartButton.addEventListener('click', restartGame);
   
     // Инициализация игры
     initializeGrid();
+    updateRedBalls(); // Обновляем отображение красных шаров при загрузке страницы
   });
