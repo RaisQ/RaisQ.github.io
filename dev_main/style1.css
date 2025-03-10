@@ -505,8 +505,8 @@ button.dark-theme {
 
 .cell.explosion {
   background-image: url('/images/explosion-sprite.png'); /* Указываем путь к спрайту */
-  width: 100px; /* Размер одного кадра */
-  height: 100px; /* Размер одного кадра */
-  background-size: 1200px 100px; /* Полный размер спрайта (12 кадров по 100px) */
+  width: 50px; /* Размер одного кадра */
+  height: 50px; /* Размер одного кадра */
+  background-size: 1200px 50px; /* Полный размер спрайта (12 кадров по 100px) */
   animation: explosion-animation 0.5s steps(12) forwards; /* 12 кадров, 0.5 сек */
 }

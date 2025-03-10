@@ -323,25 +323,35 @@ restartButton.addEventListener('click', restartGame);
       matches.forEach(match => {
         const cellElement = document.querySelector(`.board .cell[data-row="${match.row}"][data-col="${match.col}"]`);
     
-        // Добавляем класс "explosion" для анимации взрыва
-        cellElement.classList.add('explosion');
+        if (cellElement) {
+            // Добавляем класс "explosion" перед удалением класса шара
+            cellElement.classList.add('explosion');
     
-        // Удаляем класс шара
-        clearBallClass(cellElement);
+            // Удаляем класс шара
+            clearBallClass(cellElement);
     
-        // Обнуляем значение в сетке
-        grid[match.row][match.col].value = null;
-      });
+            // Обнуляем значение в сетке
+            grid[match.row][match.col].value = null;
+        }
+    });
     
-      // Не вызываем renderBoard здесь, чтобы не перезаписать explosion
-      playSound('ball-remove-sound');
-      await new Promise(resolve => setTimeout(resolve, 500)); // Ждем окончания анимации взрыва
+    playSound('ball-remove-sound'); // Воспроизводим звук исчезновения шаров
+    await new Promise(resolve => setTimeout(resolve, 500)); // Ждем окончания анимации
     
-      let newScore = calculateScore(removedCount);
-      updateScore(score + newScore);
+    matches.forEach(match => {
+        const cellElement = document.querySelector(`.board .cell[data-row="${match.row}"][data-col="${match.col}"]`);
+        if (cellElement) {
+            cellElement.classList.remove('explosion');  // Удаляем класс "explosion"
+        }
+    });
     
-      applyGravity(); // applyGravity вызовет renderBoard после завершения анимации
-    }
+    renderBoard(); // Обновляем доску после удаления гифки
+    
+    let newScore = calculateScore(removedCount);
+    updateScore(score + newScore);
+    
+    applyGravity();
+}
   
     // Функция для применения "гравитации" (сдвига шариков вниз)
     function applyGravity() {
