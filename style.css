@@ -14,7 +14,7 @@ body {
 }
   
 .cell.explosion {
-  background-image: url('/images/explosion-sprite.png'); /* Указываем путь к спрайту */
+  background-image: url('./images/explosion-sprite.png'); /* Указываем путь к спрайту */
   width: 50px; /* Размер одного кадра */
   height: 50px; /* Размер одного кадра */
   background-size: 600px 50px; /* Полный размер спрайта (12 кадров по 50px) */

@@ -378,11 +378,12 @@ async function checkForMatches() {
       let newScore = calculateScore(removedCount);
       updateScore(score + newScore);
     
-      applyGravity();
+      // Проверяем, образовались ли новые совпадения после применения гравитации
+      await applyGravity();
     }
   
     // Функция для применения "гравитации" (сдвига шариков вниз)
-    function applyGravity() {
+    async function applyGravity() {
       for (let col = 0; col < gridSize; col++) {
         let emptyRow = gridSize - 1;
         for (let row = gridSize - 1; row >= 0; row--) {
@@ -411,8 +412,41 @@ async function checkForMatches() {
         cellElement.classList.add(`ball-${grid[row][col].value}`); // Добавляем новый класс
       });
   
-      checkForMatches(); // Проверяем, образовались ли новые совпадения
-    }
+      // Проверяем, образовались ли новые совпадения после применения гравитации
+      let newMatches = [];
+      for (let row = 0; row < gridSize; row++) {
+          for (let col = 0; col < gridSize; col++) {
+              if (grid[row][col].value !== null) {
+                  // Проверка горизонтальных совпадений
+                  let matchLength = 1;
+                  while (col + matchLength < gridSize && grid[row][col].value === grid[row][col + matchLength].value) {
+                      matchLength++;
+                  }
+                  if (matchLength >= 3) {
+                      for (let i = 0; i < matchLength; i++) {
+                          newMatches.push({ row, col: col + i });
+                      }
+                  }
+                  col += matchLength - 1;
+  
+                  // Проверка вертикальных совпадений
+                  matchLength = 1;
+                  while (row + matchLength < gridSize && grid[row][col].value === grid[row + matchLength][col].value) {
+                      matchLength++;
+                  }
+                  if (matchLength >= 3) {
+                      for (let i = 0; i < matchLength; i++) {
+                          newMatches.push({ row: row + i, col });
+                      }
+                  }
+              }
+          }
+      }
+  
+      if (newMatches.length > 0) {
+          await removeMatches(newMatches); // Удаляем новые совпадения с гифкой взрыва
+      }
+  }
   
     // Функция для подсчета очков
     function calculateScore(removedCount) {
