@@ -650,7 +650,7 @@ async function checkForMatches() {
     themeButtonMobile.addEventListener('click', toggleTheme);
     toggleBackgroundButtonMobile.addEventListener('click', toggleBackgroundFunc);
     soundButtonMobile.addEventListener('click', toggleSound);
-    restartButtonMobile.addEventListener('click', restartTheGame);
+    
   
     
       
