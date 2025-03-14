@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeButtonMobile = document.getElementById('theme-button-mobile');
     const toggleBackgroundButtonMobile = document.getElementById('toggle-background-button-mobile');
     const soundButtonMobile = document.getElementById('sound-button-mobile');
-    const restartButtonMobile = document.getElementById('restart-button-mobile');
   
     const gameOverContainer = document.querySelector('.game-over-container');
     const finalScoreElement = document.getElementById('final-score');
@@ -350,25 +349,35 @@ async function checkForMatches() {
       let removedCount = matches.length;
       matches.forEach(match => {
         const cellElement = document.querySelector(`.board .cell[data-row="${match.row}"][data-col="${match.col}"]`);
-  
-        // Добавляем класс "to-remove" перед удалением класса шара
-        cellElement.classList.add('to-remove');
-  
-        // Удаляем класс шара
-        clearBallClass(cellElement);
-  
-        // Обнуляем значение в сетке
-        grid[match.row][match.col].value = null;
+    
+        if (cellElement) {
+          // Добавляем класс "explosion" (вместо "to-remove") перед удалением класса шара
+          cellElement.classList.add('explosion');
+    
+          // Удаляем класс шара
+          clearBallClass(cellElement);
+    
+          // Обнуляем значение в сетке
+          grid[match.row][match.col].value = null;
+        }
       });
-  
-      renderBoard();
-  
+    
       playSound('ball-remove-sound'); // Воспроизводим звук исчезновения шаров
-      await new Promise(resolve => setTimeout(resolve, 300)); // Ждем окончания анимации
-  
+      await new Promise(resolve => setTimeout(resolve, 500)); // Ждем окончания анимации
+    
+      matches.forEach(match => {
+        const cellElement = document.querySelector(`.board .cell[data-row="${match.row}"][data-col="${match.col}"]`);
+        if (cellElement) {
+            cellElement.classList.remove('explosion');  // Удаляем класс "explosion"
+        }
+    });
+    
+    renderBoard(); // Обновляем доску после удаления гифки
+
+
       let newScore = calculateScore(removedCount);
       updateScore(score + newScore);
-  
+    
       applyGravity();
     }
   

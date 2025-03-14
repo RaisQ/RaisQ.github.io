@@ -13,6 +13,14 @@ body {
   transition: background-color 0.3s ease; /* Плавный переход */
 }
   
+.cell.explosion {
+  background-image: url('/images/explosion-sprite.png'); /* Указываем путь к спрайту */
+  width: 50px; /* Размер одного кадра */
+  height: 50px; /* Размер одного кадра */
+  background-size: 600px 50px; /* Полный размер спрайта (12 кадров по 50px) */
+  animation: explosion-animation 0.5s steps(12) forwards; /* 12 кадров, 0.5 сек */
+}
+
 /* Стили для уведомления о завершении игры */
 .game-over-container {
   background-color: rgba(0, 0, 0, 0.8);
@@ -177,6 +185,21 @@ body {
     100% { box-shadow: 0 0 5px 3px yellow; }
   }
   
+  @keyframes explosion-animation {
+    0% { background-position: 0 0; }
+    8.33% { background-position: -50px 0; }
+    16.66% { background-position: -100px 0; }
+    25% { background-position: -150px 0; }
+    33.33% { background-position: -200px 0; }
+    41.66% { background-position: -250px 0; }
+    50% { background-position: -300px 0; }
+    58.33% { background-position: -350px 0; }
+    66.66% { background-position: -400px 0; }
+    75% { background-position: -450px 0; }
+    83.33% { background-position: -500px 0; }
+    91.66% { background-position: -550px 0; }
+    100% { background-position: -600px 0; }
+  }
   
   .controls {
     margin-top: 20px;
