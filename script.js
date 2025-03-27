@@ -21,6 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const redBallsContainer = document.querySelector('.red-balls-container');
     const redBalls = document.querySelectorAll('.red-ball');
 
+    const leaderboardButtonMobile = document.getElementById('leaderboard-button-mobile');
+    const leaderboardModal = document.querySelector('.leaderboard-modal');
+    const closeLeaderboard = document.querySelector('.close-leaderboard');
+    const leaderboardBodyMobile = document.getElementById('leaderboard-body-mobile');
+
     let moveCount = 0;
 
     // Загружаем таблицу лидеров из localStorage при загрузке страницы
@@ -592,12 +597,15 @@ async function checkForMatches() {
     
     function renderLeaderboard(leaderboard) {
       const leaderboardBody = document.getElementById('leaderboard-body');
-      leaderboardBody.innerHTML = ''; // Очищаем таблицу
-    
+      leaderboardBody.innerHTML = '';
       for (let i = 0; i < leaderboard.length; i++) {
         const entry = leaderboard[i];
         const row = createLeaderboardEntry(i + 1, entry.name, entry.score);
         leaderboardBody.appendChild(row);
+      }
+     
+      if (leaderboardModal.style.display === 'block') {
+        renderLeaderboardMobile(leaderboard);
       }
     }
 
@@ -625,6 +633,15 @@ async function checkForMatches() {
     
       // Отрисовываем таблицу лидеров
       renderLeaderboard(leaderboard);
+    }
+
+    function renderLeaderboardMobile(leaderboard) {
+      leaderboardBodyMobile.innerHTML = '';
+      for (let i = 0; i < leaderboard.length; i++) {
+        const entry = leaderboard[i];
+        const row = createLeaderboardEntry(i + 1, entry.name, entry.score);
+        leaderboardBodyMobile.appendChild(row);
+      }
     }
   
     // Функция для переключения темы
@@ -694,7 +711,16 @@ async function checkForMatches() {
     toggleBackgroundButtonMobile.addEventListener('click', toggleBackgroundFunc);
     soundButtonMobile.addEventListener('click', toggleSound);
     
-  
+    leaderboardButtonMobile.addEventListener('click', () => {
+      playSound('button-click-sound');
+      leaderboardModal.style.display = 'block';
+      renderLeaderboardMobile(leaderboard);
+    });
+    
+    closeLeaderboard.addEventListener('click', () => {
+      playSound('button-click-sound');
+      leaderboardModal.style.display = 'none';
+    });
     
       
     

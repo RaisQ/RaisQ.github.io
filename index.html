@@ -59,17 +59,38 @@
      
       
 
-      <!-- Выпадающий список для мобильных -->
-      <div class="dropdown mobile-dropdown">
-        <button class="dropdown-button">Меню</button>
-        <div class="dropdown-content">
-          <button id="theme-button-mobile">Сменить тему</button>
-          <button id="toggle-background-button-mobile">Скрыть фон</button>
-          <button id="sound-button-mobile">Звук: Вкл</button>
-          
-        </div>
-      </div>      
+      <!-- Изменения в выпадающем списке -->
+<div class="dropdown mobile-dropdown">
+  <button class="dropdown-button">Меню</button>
+  <div class="dropdown-content">
+    <button id="theme-button-mobile">Сменить тему</button>
+    <button id="toggle-background-button-mobile">Скрыть фон</button>
+    <button id="sound-button-mobile">Звук: Вкл</button>
+    <button id="leaderboard-button-mobile">Лидеры</button>
+  </div>
+</div>
+
+<!-- Добавьте модальное окно для лидерборда -->
+<div class="leaderboard-modal" style="display: none;">
+  <div class="leaderboard-modal-content">
+    <span class="close-leaderboard">&times;</span>
+    <h2>Таблица лидеров</h2>
+    <div class="leaderboard-table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Место</th>
+            <th>Имя</th>
+            <th>Очки</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body-mobile">
+          <!-- Здесь будут вставлены записи таблицы -->
+        </tbody>
+      </table>
     </div>
+  </div>
+</div>
 
     <div class="game-over-container" style="display: none;">
       <h2>Игра окончена!</h2>
