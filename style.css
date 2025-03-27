@@ -19,6 +19,7 @@ body {
   height: 50px; /* Размер одного кадра */
   background-size: 600px 50px; /* Полный размер спрайта (12 кадров по 50px) */
   animation: explosion-animation 0.5s steps(12) forwards; /* 12 кадров, 0.5 сек */
+  background-color: transparent;
 }
 
 /* Стили для уведомления о завершении игры */
