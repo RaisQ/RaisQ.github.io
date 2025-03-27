@@ -1,28 +1,26 @@
 body {
   font-family: sans-serif;
-  /*background-color: #f0f0f0; !* Светлая тема по умолчанию *!*/
-  background-image: url('images/fon.jpg'); /* Добавляем фон */
-  background-size: cover; /* Масштабируем изображение, чтобы покрыть всю область */
-  background-repeat: no-repeat; /* Запрещаем повторение изображения */
-  background-attachment: fixed; /* Фиксируем фон при прокрутке */
+  background-image: url('images/fon.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   margin: 0;
-  transition: background-color 0.3s ease; /* Плавный переход */
-}
-  
-.cell.explosion {
-  background-image: url('./images/explosion-sprite.png'); /* Указываем путь к спрайту */
-  background-size: 600px 50px; /* Полный размер спрайта (12 кадров по 50px) */
-  animation: explosion-animation 0.5s steps(12) forwards; /* 12 кадров, 0.5 сек */
-  background-color: transparent;
-  width: 100%; /* Устанавливаем ширину равной родительскому контейнеру */
-  height: 100%; /* Устанавливаем высоту равной родительскому контейнеру */
+  transition: background-color 0.3s ease;
 }
 
-/* Стили для уведомления о завершении игры */
+.cell.explosion {
+  background-image: url('./images/explosion-sprite.png');
+  background-size: 600px 50px;
+  animation: explosion-animation 0.5s steps(12) forwards;
+  background-color: transparent;
+  width: 100%;
+  height: 100%;
+}
+
 .game-over-container {
   background-color: rgba(0, 0, 0, 0.8);
   position: fixed;
@@ -58,215 +56,244 @@ body {
 }
 
 .top-buttons {
-  display: flex; /*  Распределяем пространство поровну */
-  width: 100%; /*  Занимаем всю ширину .controls */
-  justify-content: space-around; /*  Распределяем пространство между элементами */
-  margin-bottom: 20px; /* Отступ до кнопки "Играть Снова" */
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  margin-bottom: 20px;
 }
 
 .container {
-  /* ... (Предыдущие стили) ... */
-  display: flex; /* Включаем flexbox для центровки */
-  flex-direction: column; /*  Располагаем элементы в колонку */
-  justify-content: center; /* Центрируем по вертикали */
-  align-items: center; /* Центрируем по горизонтали */
-  width: 500px; /* Задайте желаемую ширину контейнера */
-  height: 620px; /* Задайте желаемую высоту контейнера */
-  /*background-color: rgba(240, 240, 240, 0.8); !* Светлый фон по умолчанию *!*/
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 500px;
+  height: 620px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
+
 .container.no-background {
-  background-color: transparent; /* Прозрачный фон */
-  box-shadow: none; /* Убираем тень, если нет фона */
+  background-color: transparent;
+  box-shadow: none;
 }
-  
+
 .container.dark-theme {
-  background-color: rgba(51, 51, 51, 0.8); /*!* Темный фон для темной темы *!*/
-  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1); /*  Слабая тень для темной темы */
+  background-color: rgba(51, 51, 51, 0.8);
+  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
 }
 
 .container.dark-theme.no-background {
-  background-color: transparent; /* Прозрачный фон */
-  box-shadow: none; /* Убираем тень, если нет фона */
+  background-color: transparent;
+  box-shadow: none;
 }
-  
-  .board {
-    display: grid;
-    grid-template-columns: repeat(8, 50px); /* Пример: 8x8 поле */
-    grid-gap: 2px;
-    margin: 20px auto;
-  }
-  
-  .wrapper {
-    display: flex;
-    align-items: flex-start;
-  }
-  
-  .leaderboard {
-    width: 300px;
-    margin-right: 20px;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .leaderboard h2 {
-    margin-top: 0;
-    font-size: 1.5em;
-  }
-  
-  .leaderboard-table-container {    /* Добавляем стили для контейнера таблицы */
-    max-height: 250px;               /* Фиксированная высота контейнера */
-    overflow-y: auto;                /* Добавляем вертикальный скроллбар, если необходимо */
-  }
-  
-  .leaderboard table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .leaderboard th,
-  .leaderboard td {
-    padding: 8px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .leaderboard th {
-    background-color: #f2f2f2;
-    position: sticky;            /* Фиксируем заголовок таблицы */
-    top: 0;                      /* Прилипает к верху контейнера */
-    z-index: 1;                /*  Убеждаемся, что он находится поверх содержимого таблицы */
-  }
-  
-  /* Стили для темной темы (если у вас есть) */
-  body.dark-theme .leaderboard {
-    border-color: #666;
-    background-color: #333;
-    color: #fff;
-  }
-  
-  body.dark-theme .leaderboard th {
-    background-color: #444;
-    color: #fff;
-  }
-  
-  body.dark-theme .leaderboard td {
-    border-bottom-color: #555;
-  }
-  
-  .cell {
-    width: 50px; /* Фиксированный размер */
-    height: 50px; /* Фиксированный размер */
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 0; /* Скрываем текст */
-    border-radius: 50%; /* Делаем ячейку круглой */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Добавляем тень */
-    border: 1px solid transparent; /* Прозрачный border по умолчанию */
-    box-sizing: border-box; /* Включаем border в общую ширину и высоту */
-    transition: border-color 0.3s ease, background-color 0.3s ease; /* Плавный переход */
-    background-color: #eee;
-  }
-  
-  .cell.selected {
-    animation: jump 0.5s ease-in-out infinite alternate;
-  }
-  
-  @keyframes jump {
-    from { transform: translateY(0); }
-    to   { transform: translateY(-5px); }
-  }
-  
-  .cell.to-remove {
-    animation: highlight 0.3s ease-in-out;
-  }
-  
-  @keyframes highlight {
-    0% { box-shadow: none; }
-    100% { box-shadow: 0 0 5px 3px yellow; }
-  }
-  
-  @keyframes explosion-animation {
-    0% { background-position: 0 0; }
-    8.33% { background-position: -50px 0; }
-    16.66% { background-position: -100px 0; }
-    25% { background-position: -150px 0; }
-    33.33% { background-position: -200px 0; }
-    41.66% { background-position: -250px 0; }
-    50% { background-position: -300px 0; }
-    58.33% { background-position: -350px 0; }
-    66.66% { background-position: -400px 0; }
-    75% { background-position: -450px 0; }
-    83.33% { background-position: -500px 0; }
-    91.66% { background-position: -550px 0; }
-    100% { background-position: -600px 0; }
-  }
-  
-  .controls {
-    margin-top: 20px;
-  }
-  
-  button {
-    padding: 10px 20px;
-    border: none;
-    background-color: #4CAF50;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
-    margin: 0 10px;
-  }
-  
-  button:hover {
-    background-color: #3e8e41;
-  }
-  
-  .game-over-container {
-    /* Стили для экрана окончания игры */
-    background-color: rgba(0, 0, 0, 0.5);
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    color: white;
-  }
 
-  .container {
-    background-color: #fff; /* Светлая тема по умолчанию */
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    text-align: center;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Плавный переход */
+.board {
+  display: grid;
+  grid-template-columns: repeat(8, 50px);
+  grid-gap: 2px;
+  margin: 20px auto;
+}
+
+.wrapper {
+  display: flex;
+  align-items: flex-start;
+}
+
+.leaderboard {
+  width: 300px;
+  margin-right: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.leaderboard h2 {
+  margin-top: 0;
+  font-size: 1.5em;
+}
+
+.leaderboard-table-container {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.leaderboard table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leaderboard th,
+.leaderboard td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.leaderboard th {
+  background-color: #f2f2f2;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+body.dark-theme .leaderboard {
+  border-color: #666;
+  background-color: #333;
+  color: #fff;
+}
+
+body.dark-theme .leaderboard th {
+  background-color: #444;
+  color: #fff;
+}
+
+body.dark-theme .leaderboard td {
+  border-bottom-color: #555;
+}
+
+.cell {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  border: 1px solid transparent;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+  background-color: #eee;
+}
+
+.cell.selected {
+  animation: jump 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes jump {
+  from {
+    transform: translateY(0);
   }
-  
-  .cell {
-    /* ... (остальные стили ячейки) ... */
-    background-color: #eee; /* Светлая тема по умолчанию */
-    transition: background-color 0.3s ease, color 0.3s ease; /* Плавный переход */
-    color: #333;
+  to {
+    transform: translateY(-5px);
   }
-  
-/* Темная тема */
+}
+
+.cell.to-remove {
+  animation: highlight 0.3s ease-in-out;
+}
+
+@keyframes highlight {
+  0% {
+    box-shadow: none;
+  }
+  100% {
+    box-shadow: 0 0 5px 3px yellow;
+  }
+}
+
+@keyframes explosion-animation {
+  0% {
+    background-position: 0 0;
+  }
+  8.33% {
+    background-position: -50px 0;
+  }
+  16.66% {
+    background-position: -100px 0;
+  }
+  25% {
+    background-position: -150px 0;
+  }
+  33.33% {
+    background-position: -200px 0;
+  }
+  41.66% {
+    background-position: -250px 0;
+  }
+  50% {
+    background-position: -300px 0;
+  }
+  58.33% {
+    background-position: -350px 0;
+  }
+  66.66% {
+    background-position: -400px 0;
+  }
+  75% {
+    background-position: -450px 0;
+  }
+  83.33% {
+    background-position: -500px 0;
+  }
+  91.66% {
+    background-position: -550px 0;
+  }
+  100% {
+    background-position: -600px 0;
+  }
+}
+
+.controls {
+  margin-top: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 0 10px;
+}
+
+button:hover {
+  background-color: #3e8e41;
+}
+
+.game-over-container {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: white;
+}
+
+.container {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cell {
+  background-color: #eee;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  color: #333;
+}
+
 body.dark-theme {
   background-color: #333;
   color: #fff;
-  background-image: url('images/fon.jpg'); /* Добавляем фон для темной темы */
+  background-image: url('images/fon.jpg');
 }
-  
+
 .container.dark-theme {
   background-color: #444;
   box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
 }
-  
+
 .cell.dark-theme {
   background-color: #555;
   color: #eee;
@@ -279,9 +306,11 @@ button.dark-theme {
 }
 
 #toggle-background-button {
-  width: 128px; /* Или другая подходящая ширина */
-}#sound-button {
-  width: 108px; /* Или другая подходящая ширина */
+  width: 128px;
+}
+
+#sound-button {
+  width: 108px;
 }
 
 .cell {
@@ -291,37 +320,37 @@ button.dark-theme {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 0; /* Скрываем текст */
-  border-radius: 50%; /* Делаем ячейку круглой */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Добавляем тень */
-  border: 1px solid transparent; /* Добавляем прозрачный border по умолчанию */
-  box-sizing: border-box; /* Включаем border в общую ширину и высоту */
-  transition: border-color 0.3s ease, background-color 0.3s ease; /* Плавный переход */
+  font-size: 0;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  border: 1px solid transparent;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
   background-color: #eee;
 }
 
 .ball-1 {
-  background-color: blue; /* Синий шар */
+  background-color: blue;
 }
 
 .ball-2 {
-  background-color: green; /* Зеленый шар */
+  background-color: green;
 }
 
 .ball-3 {
-  background-color: red; /* Красный шар */
+  background-color: red;
 }
 
 .ball-4 {
-  background-color: yellow; /* Желтый шар */
+  background-color: yellow;
 }
 
 .ball-5 {
-  background-color: purple; /* Фиолетовый шар */
+  background-color: purple;
 }
-  
+
 .cell.dark-theme {
-  border-color: #666; /*  Изменяем цвет border для темной темы */
+  border-color: #666;
   background-color: #555;
 }
 
@@ -345,7 +374,6 @@ button.dark-theme {
   background-color: darkmagenta;
 }
 
-/* Стили для выпадающего списка */
 .dropdown {
   position: relative;
   display: inline-block;
@@ -392,26 +420,23 @@ button.dark-theme {
   display: block;
 }
 
-/* Добавляем стили для основного контента */
 .main-content {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 20px; /* Расстояние между игровым полем и красными шарами */
+  gap: 20px;
 }
 
-/* Стили для контейнера с красными шарами */
 .red-balls-container {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Расстояние между шарами */
+  gap: 10px;
   padding: 10px;
-  background-color: inherit; /* Наследуем фон от контейнера */
+  background-color: inherit;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-/* Стили для красных шаров */
 .red-ball {
   width: 50px;
   height: 50px;
@@ -420,7 +445,6 @@ button.dark-theme {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-/* Стили для серых шаров */
 .gray-ball {
   width: 50px;
   height: 50px;
@@ -429,9 +453,7 @@ button.dark-theme {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-/* Стили для десктопа */
 .desktop-button {
-  /* Ваши стили для кнопок на десктопе */
   background-color: #4CAF50;
   color: white;
   padding: 10px 20px;
@@ -447,12 +469,11 @@ button.dark-theme {
   margin-bottom: 10px;
 }
 
-/* Скрываем выпадающий список на десктопе */
 .mobile-dropdown {
   display: none;
 }
 
-/* Стили для мобильных устройств */
+/* Styles for mobile devices */
 @media (max-width: 600px) {
   body {
     font-size: 14px;
@@ -485,17 +506,17 @@ button.dark-theme {
     align-items: center;
   }
 
-  /* Скрываем кнопки для десктопа */
+  /* Hide buttons for desktop */
   .desktop-buttons {
     display: none;
   }
 
-  /* Показываем выпадающий список на мобильных */
+  /* Show dropdown on mobile */
   .mobile-dropdown {
     display: inline-block;
   }
 
-  /* Стили для выпадающего списка */
+  /* Styles for dropdown */
   .dropdown {
     position: relative;
     display: inline-block;
@@ -519,7 +540,7 @@ button.dark-theme {
     z-index: 1;
     border-radius: 5px;
     padding: 10px;
-    right: 0; /* Выравниваем по правому краю */
+    right: 0;
   }
 
   .dropdown-content button {
@@ -554,12 +575,12 @@ button.dark-theme {
   }
 
   .cell {
-    width: 40px; /* Уменьшаем размер для маленьких экранов */
+    width: 40px;
     height: 40px;
   }
 
   .cell.explosion {
-    background-size: 480px 40px; /* Адаптируем размер спрайта */
+    background-size: 480px 40px;
   }
 
   @keyframes explosion-animation {
@@ -581,20 +602,20 @@ button.dark-theme {
 
 @media (max-width: 350px) {
   .board {
-    grid-template-columns: repeat(8, 20px); /* Уменьшаем размер ячеек */
+    grid-template-columns: repeat(8, 20px);
     grid-gap: 1px;
   }
 
   .cell {
-    width: 20px; /* Фиксированный размер для маленьких экранов */
+    width: 20px;
     height: 20px;
     font-size: 0;
-    border-radius: 50%; /* Сохраняем круглую форму */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Уменьшаем тень */
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
 
   .cell.explosion {
-    background-size: 240px 20px; /* Адаптируем размер спрайта */
+    background-size: 240px 20px;
   }
 
   @keyframes explosion-animation {
@@ -614,7 +635,7 @@ button.dark-theme {
   }
 }
 
-/* Стили для модального окна лидерборда */
+/* Styles for leaderboard modal */
 .leaderboard-modal {
   display: none;
   position: fixed;
@@ -650,7 +671,7 @@ button.dark-theme {
   color: black;
 }
 
-/* Скрываем обычный лидерборд на мобильных */
+/* Hide regular leaderboard on mobile */
 @media (max-width: 600px) {
   .leaderboard {
     display: none;
