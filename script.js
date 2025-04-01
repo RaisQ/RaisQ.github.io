@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
+  
+  generateRandomName()
+  .then(users => {
+    console.log("Список пользователей:", users);
+    // Здесь можно работать с полученным списком
+  })
+  .catch(error => {
+    console.error("Ошибка получения списка пользователей:", error);
+  });
   const boardElement = document.querySelector('.board');
   const scoreElement = document.getElementById('score');
   const leaderboardBody = document.getElementById('leaderboard-body');
@@ -131,24 +140,35 @@ document.addEventListener('DOMContentLoaded', () => {
     // Отрисовываем таблицу лидеров при инициализации игры
     let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
   
-    // Генерируем случайные записи, только если таблица пуста
-    if (leaderboard.length === 0) {
-      for (let i = 1; i <= 7; i++) {
-        const name = generateRandomName();
-        const score = Math.floor(Math.random() * 10000);
+    // Генерируем записи, только если таблица пуста
+if (leaderboard.length === 0) {
+  console.log('No leaderboar')
+  generateRandomName()
+    .then(users => {
+      // Используем полученный список пользователей для генерации записей
+      for (let i = 0; i < Math.min(users.length, 7); i++) {
+        const name = users[i].username;
+        const score = users[i].score;
         leaderboard.push({ name: name, score: score });
       }
-  
+
       // Сохраняем случайные записи в localStorage
       localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-    }
-  
-    // Сортируем таблицу лидеров
-    leaderboard.sort((a, b) => b.score - a.score);
-  
-    // Отрисовываем таблицу лидеров при инициализации игры
-    renderLeaderboard(leaderboard);
-  }
+
+      // Сортируем таблицу лидеров
+      leaderboard.sort((a, b) => b.score - a.score);
+
+      // Отрисовываем таблицу лидеров при инициализации игры
+      renderLeaderboard(leaderboard);
+    })
+    .catch(error => {
+      console.error("Ошибка получения списка пользователей:", error);
+    });
+} else {
+  // Если таблица лидеров уже есть, просто сортируем и отображаем
+  leaderboard.sort((a, b) => b.score - a.score);
+  renderLeaderboard(leaderboard);
+}}
 // Revised code:
 // Function to render the game board in the DOM
 function renderBoard() {
@@ -252,11 +272,6 @@ async function swapCells(cell1, cell2) {
 
   playSound('ball-swap-sound');
   renderBoard();
-}
-
-// Function to end the game
-function endGame() {
-  gameOverContainer.style.display = 'flex'; // Show the notification
 }
 
 // Function to reset the ball color
@@ -505,6 +520,16 @@ function endGame() {
   finalScoreElement.textContent = score;
   gameOverContainer.style.display = 'flex';
   localStorage.setItem('score', 0);
+    console.log("Функция endGame вызвана");
+    console.log("Перед вызовом updateUserScore");
+    updateUserScore()
+      .then(response => {
+        console.log("Ответ от сервера:", response);
+      })
+      .catch(error => {
+        console.error("Ошибка при отправке данных:", error);
+      });
+    gameOverContainer.style.display = 'flex'; // Show the notification
 }
 
 function updateLeaderboard(leaderboard, playerName, score) {
@@ -542,16 +567,38 @@ function renderLeaderboard(leaderboard) {
   }
 }
 
+function createLeaderboardEntry(rank, name, score) {
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td>${rank}</td>
+    <td>${name}</td>
+    <td>${score}</td>
+  `;
+  return row;
+}
+
 function updateScore(newScore) {
   score = newScore;
   scoreElement.textContent = score;
   localStorage.setItem('score', score);
+
   let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
   let playerName = localStorage.getItem('playerName');
+
   if (!playerName) {
     playerName = prompt("Please enter your name:");
     localStorage.setItem('playerName', playerName);
   }
+
+  // Получаем или создаем объект для хранения данных игроков
+  let playerDataDict = JSON.parse(localStorage.getItem('playerDataDict')) || {};
+
+  // Обновляем или добавляем запись для текущего игрока
+  playerDataDict[playerName] = score;
+
+  // Сохраняем обновленный словарь в localStorage
+  localStorage.setItem('playerDataDict', JSON.stringify(playerDataDict));
+
   updateLeaderboard(leaderboard, playerName, score);
   localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
   renderLeaderboard(leaderboard);
@@ -631,34 +678,121 @@ closeLeaderboard.addEventListener('click', () => {
 });
 
 function generateRandomName() {
-  const names = ['Alexander', 'Elena', 'Dmitry', 'Olga', 'Sergey', 'Anna', 'Igor', 'Natalia'];
-  const surnames = ['Ivanov', 'Petrov', 'Sidorov', 'Smirnov', 'Kuznetsov', 'Popov', 'Vasiliev', 'Fedorov'];
-  return names[Math.floor(Math.random() * names.length)] + ' ' + surnames[Math.floor(Math.random() * surnames.length)];
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "http://127.0.0.1:8000/users"); // URL для получения списка пользователей
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onload = function () {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          const users = JSON.parse(xhr.responseText); // Парсим ответ в JSON
+          resolve(users); // Возвращаем список пользователей
+        } catch (error) {
+          reject({
+            status: xhr.status,
+            statusText: "Ошибка парсинга JSON",
+            responseText: xhr.responseText,
+          });
+        }
+      } else {
+        reject({
+          status: xhr.status,
+          statusText: xhr.statusText,
+          responseText: xhr.responseText,
+        });
+      }
+    };
+
+    xhr.onerror = function () {
+      reject({
+        status: xhr.status,
+        statusText: xhr.statusText,
+        responseText: xhr.responseText,
+      });
+    };
+
+    xhr.send(); // Отправляем запрос
+  });
 }
 
-function createLeaderboardEntry(rank, name, score) {
-  const row = document.createElement('tr');
-  const rankCell = document.createElement('td');
-  const nameCell = document.createElement('td');
-  const scoreCell = document.createElement('td');
 
-  rankCell.textContent = rank;
-  nameCell.textContent = name;
-  scoreCell.textContent = score;
+function updateUserScore() {
+  return new Promise((resolve, reject) => {
+    const playerDataDict = JSON.parse(localStorage.getItem('playerDataDict')) || {};
 
-  row.appendChild(rankCell);
-  row.appendChild(nameCell);
-  row.appendChild(scoreCell);
+    if (Object.keys(playerDataDict).length === 0) {
+      console.error("Нет данных для отправки на сервер.");
+      reject("Нет данных для отправки на сервер.");
+      return;
+    }
 
-  return row;
+    console.log("Отправляемые данные:", playerDataDict);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", "http://127.0.0.1:8000/users");
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onload = function () {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        console.log("Данные успешно отправлены на сервер:", xhr.responseText);
+        resolve(JSON.parse(xhr.responseText));
+      } else {
+        console.error("Ошибка при отправке данных на сервер:", xhr.responseText);
+        reject({
+          status: xhr.status,
+          statusText: xhr.statusText,
+          responseText: xhr.responseText,
+        });
+      }
+    };
+
+    xhr.onerror = function () {
+      console.error("Ошибка сети при отправке данных на сервер.");
+      reject({
+        status: xhr.status,
+        statusText: xhr.statusText,
+        responseText: xhr.responseText,
+      });
+    };
+
+    console.log(JSON.stringify(playerDataDict));
+    xhr.send(JSON.stringify(playerDataDict));
+  });
 }
 
-for (let i = 1; i <= 70; i++) {
-  const name = generateRandomName();
-  const score = Math.floor(Math.random() * 10000);
-  const entry = createLeaderboardEntry(i, name, score);
-  leaderboardBody.appendChild(entry);
+// Функция для получения списка пользователей (GET запрос)
+function getUsers() {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "/users");  // Замените "/users" на URL вашего GET эндпоинта
+    xhr.setRequestHeader("Content-Type", "application/json"); // необязательно для GET
+
+    xhr.onload = function() {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(JSON.parse(xhr.responseText));
+      } else {
+        reject({
+          status: xhr.status,
+          statusText: xhr.statusText,
+          responseText: xhr.responseText
+        });
+      }
+    };
+
+    xhr.onerror = function() {
+      reject({
+        status: xhr.status,
+        statusText: xhr.statusText,
+        responseText: xhr.responseText
+      });
+    };
+
+    xhr.send(); // Нет тела запроса для GET
+  });
 }
+
+
 
 initializeGrid();
   });
