@@ -102,13 +102,15 @@
       </div>
 
       <!-- Уведомление об окончании игры -->
-      <div class="game-over-container" style="display: none;">
-        <h2>Игра окончена!</h2>
-        <p>Ваш счет: <span id="final-score">0</span></p>
-        <button id="restart-button">Играть снова</button>
-      </div>
-    </div>
+<div class="game-over-container" style="display: none;">
+  <h2>Игра окончена!</h2>
+  <p>Ваш счет: <span id="final-score">0</span></p>
+  <div class="name-input-container">
+    <input type="text" id="player-name-input" placeholder="Введите ваше имя" maxlength="20">
+    <button id="save-score-button">Сохранить результат</button>
   </div>
+  <button id="restart-button">Играть снова</button>
+</div>
 
   <!-- Подключение JavaScript -->
   <script src="script.js"></script>

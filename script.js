@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const gameOverContainer = document.querySelector('.game-over-container');
   const finalScoreElement = document.getElementById('final-score');
+
+  const playerNameInput = document.getElementById('player-name-input');
+  const saveScoreButton = document.getElementById('save-score-button');
   
   // Жизни игрока (теперь сердца)
   const redBallsContainer = document.querySelector('.red-balls-container');
@@ -121,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function initializeGrid() {
     moveCount = 0;
     resetRedBalls(); // Используем обновлённую функцию
+    isFirstGame = true; // Сбрасываем флаг при новой игре
     
     let hasInitialMatches;
     do {
@@ -137,15 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
       renderBoard();
       hasInitialMatches = checkForMatchesOnInitialization();
     } while (hasInitialMatches);
-
-    if (leaderboard.length === 0) {
-      for (let i = 1; i <= 7; i++) {
-        const name = generateRandomName();
-        const score = Math.floor(Math.random() * 10000);
-        leaderboard.push({ name: name, score: score });
-      }
-      localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-    }
 
     leaderboard.sort((a, b) => b.score - a.score);
     renderLeaderboard(leaderboard);
@@ -230,8 +225,38 @@ document.addEventListener('DOMContentLoaded', () => {
   function endGame() {
     finalScoreElement.textContent = score;
     gameOverContainer.style.display = 'flex';
-    localStorage.setItem('score', 0);
+    
+    const savedName = localStorage.getItem('playerName');
+    if (savedName && !isFirstGame) {
+      // Если имя уже сохранено и это не первая игра - скрываем поле ввода
+      document.querySelector('.name-input-container').style.display = 'none';
+      // Автоматически сохраняем результат под существующим именем
+      updateLeaderboardAndSave(savedName);
+    } else {
+      // Показываем поле ввода для первой игры или если имя не сохранено
+      document.querySelector('.name-input-container').style.display = 'flex';
+      playerNameInput.value = savedName || '';
+    }
   }
+
+  function updateLeaderboardAndSave(name) {
+    updateLeaderboard(leaderboard, name, score);
+    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+    renderLeaderboard(leaderboard);
+    localStorage.setItem('playerName', name);
+  }
+
+  saveScoreButton.addEventListener('click', () => {
+    const playerName = playerNameInput.value.trim();
+    if (playerName) {
+      updateLeaderboard(leaderboard, playerName, score);
+      document.querySelector('.name-input-container').style.display = 'none';
+      isFirstGame = false;
+      alert('Результат сохранён!');
+    } else {
+      alert('Пожалуйста, введите ваше имя');
+    }
+  });
 
   async function checkForMatches() {
     let matches = [];
@@ -450,53 +475,55 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateLeaderboard(leaderboard, playerName, score) {
-    leaderboard.sort((a, b) => b.score - a.score);
-    let playerIndex = leaderboard.findIndex(entry => entry.name === playerName);
-    if (playerIndex !== -1) {
-      leaderboard[playerIndex].score = score;
-      while (playerIndex > 0 && leaderboard[playerIndex].score > leaderboard[playerIndex - 1].score) {
-        [leaderboard[playerIndex], leaderboard[playerIndex - 1]] = [leaderboard[playerIndex - 1], leaderboard[playerIndex]];
-        playerIndex--;
+    // Находим или создаем запись игрока
+    let playerEntry = leaderboard.find(entry => entry.name === playerName);
+    
+    if (playerEntry) {
+      // Обновляем счет, если новый лучше
+      if (score > playerEntry.score) {
+        playerEntry.score = score;
       }
     } else {
-      if (leaderboard.length < 7) {
-        leaderboard.push({ name: playerName, score: score });
-      } else if (score < leaderboard[leaderboard.length - 1].score) {
-        leaderboard[leaderboard.length - 1] = { name: playerName, score: score };
-      }
+      // Добавляем нового игрока
+      playerEntry = { name: playerName, score: score };
+      leaderboard.push(playerEntry);
     }
+    
+    // Сортируем и ограничиваем до 7 записей
     leaderboard.sort((a, b) => b.score - a.score);
     if (leaderboard.length > 7) {
       leaderboard.length = 7;
     }
+    
+    // Сохраняем и рендерим
+    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+    renderLeaderboard(leaderboard);
   }
 
   function renderLeaderboard(leaderboard) {
-    const leaderboardBody = document.getElementById('leaderboard-body');
-    leaderboardBody.innerHTML = '';
-    for (let i = 0; i < leaderboard.length; i++) {
-      const entry = leaderboard[i];
-      const row = createLeaderboardEntry(i + 1, entry.name, entry.score);
-      leaderboardBody.appendChild(row);
-    }
-    if (leaderboardModal.style.display === 'block') {
-      renderLeaderboardMobile(leaderboard);
-    }
+    // Сортируем leaderboard один раз
+    const sortedLeaderboard = [...leaderboard].sort((a, b) => b.score - a.score);
+    
+    // Ограничиваем до 7 записей
+    const displayedLeaderboard = sortedLeaderboard.slice(0, 7);
+    
+    // Обновляем обе таблицы
+    updateLeaderboardTable(leaderboardBody, displayedLeaderboard);
+    updateLeaderboardTable(leaderboardBodyMobile, displayedLeaderboard);
+  }
+
+  function updateLeaderboardTable(tableElement, data) {
+    tableElement.innerHTML = '';
+    data.forEach((entry, index) => {
+      const row = createLeaderboardEntry(index + 1, entry.name, entry.score);
+      tableElement.appendChild(row);
+    });
   }
 
   function updateScore(newScore) {
     score = newScore;
     scoreElement.textContent = score;
     localStorage.setItem('score', score);
-    let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-    let playerName = localStorage.getItem('playerName');
-    if (!playerName) {
-      playerName = prompt("Please enter your name:");
-      localStorage.setItem('playerName', playerName);
-    }
-    updateLeaderboard(leaderboard, playerName, score);
-    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-    renderLeaderboard(leaderboard);
   }
 
   function renderLeaderboardMobile(leaderboard) {
@@ -593,13 +620,6 @@ document.addEventListener('DOMContentLoaded', () => {
     row.appendChild(scoreCell);
 
     return row;
-  }
-
-  for (let i = 1; i <= 70; i++) {
-    const name = generateRandomName();
-    const score = Math.floor(Math.random() * 10000);
-    const entry = createLeaderboardEntry(i, name, score);
-    leaderboardBody.appendChild(entry);
   }
 
   initializeGrid();
