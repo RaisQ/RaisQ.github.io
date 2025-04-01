@@ -3,13 +3,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const scoreElement = document.getElementById('score');
   const leaderboardBody = document.getElementById('leaderboard-body');
   
-  // Получаем элементы кнопок для десктопа
+  // Получаем элементы кнопок
   const themeButton = document.getElementById('theme-button');
   const toggleBackgroundButton = document.getElementById('toggle-background-button');
   const soundButton = document.getElementById('sound-button');
   const restartButton = document.getElementById('restart-button');
   
-  // Получаем элементы кнопок для мобильных
+  // Мобильные кнопки
   const themeButtonMobile = document.getElementById('theme-button-mobile');
   const toggleBackgroundButtonMobile = document.getElementById('toggle-background-button-mobile');
   const soundButtonMobile = document.getElementById('sound-button-mobile');
@@ -17,9 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const gameOverContainer = document.querySelector('.game-over-container');
   const finalScoreElement = document.getElementById('final-score');
   
-  // Жизни игрока
+  // Жизни игрока (теперь сердца)
   const redBallsContainer = document.querySelector('.red-balls-container');
-  const redBalls = document.querySelectorAll('.red-ball');
+  const redBalls = document.querySelectorAll('.heart'); // Изменили селектор на .heart
   
   const leaderboardButtonMobile = document.getElementById('leaderboard-button-mobile');
   const leaderboardModal = document.querySelector('.leaderboard-modal');
@@ -27,26 +27,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const leaderboardBodyMobile = document.getElementById('leaderboard-body-mobile');
   
   let moveCount = 0;
-  
-  // Загружаем таблицу лидеров из localStorage при загрузке страницы
   let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
   renderLeaderboard(leaderboard);
   
-  const gridSize = 8; // Размер поля (8x8)
+  const gridSize = 8;
   let grid = [];
   let selectedCell = null;
-  
-  // Восстанавливаем очки из localStorage или устанавливаем значение по умолчанию 0
   let score = parseInt(localStorage.getItem('score')) || 0;
   scoreElement.textContent = score;
   
-  // Инициализируем состояние звука из localStorage или устанавливаем значение по умолчанию true
-  let soundEnabled = localStorage.getItem('soundEnabled') !== 'false'; // true по умолчанию
+  let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
   const body = document.body;
   const container = document.querySelector('.container');
   
-  // Применяем тему при загрузке страницы
-  let currentTheme = localStorage.getItem('theme') || 'light'; // Текущая тема (light или dark)
+  let currentTheme = localStorage.getItem('theme') || 'light';
   if (currentTheme === 'dark') {
     body.classList.add('dark-theme');
     container.classList.add('dark-theme');
@@ -55,30 +49,47 @@ document.addEventListener('DOMContentLoaded', () => {
     container.classList.remove('dark-theme');
   }
   
-  let backgroundVisible = localStorage.getItem('backgroundVisible') !== 'false'; // Изначально фон виден
+  let backgroundVisible = localStorage.getItem('backgroundVisible') !== 'false';
   const toggleBackground = () => {
     if (backgroundVisible) {
       container.classList.remove('no-background');
       toggleBackgroundButton.textContent = 'Скрыть фон';
-      toggleBackgroundButtonMobile.textContent = 'Скрыть фон'; // Обновляем текст мобильной кнопки
+      toggleBackgroundButtonMobile.textContent = 'Скрыть фон';
     } else {
       container.classList.add('no-background');
       toggleBackgroundButton.textContent = 'Показать фон';
-      toggleBackgroundButtonMobile.textContent = 'Показать фон'; // Обновляем текст мобильной кнопки
+      toggleBackgroundButtonMobile.textContent = 'Показать фон';
     }
   }
   
-  // Применяем состояние видимости фона при загрузке страницы
   toggleBackground();
   
-  // Обновляем текст кнопки звука при загрузке страницы
   const updateSoundButtonText = () => {
     const text = `Звук: ${soundEnabled ? 'Вкл' : 'Выкл'}`;
     soundButton.textContent = text;
     soundButtonMobile.textContent = text;
   };
   updateSoundButtonText();
-  
+
+  // Функция сброса жизней (теперь работает с сердцами)
+  function resetRedBalls() {
+    redBalls.forEach(ball => {
+      ball.classList.remove('lost', 'lost-animation');
+    });
+  }
+
+  // Функция обновления жизней (теперь работает с сердцами)
+  function updateRedBalls() {
+    if (moveCount > 0 && moveCount <= redBalls.length) {
+      const ball = redBalls[moveCount - 1];
+      ball.classList.add('lost-animation');
+      setTimeout(() => {
+        ball.classList.add('lost');
+        ball.classList.remove('lost-animation');
+      }, 500);
+    }
+  }
+
   function checkForMatchesOnInitialization() {
     for (let row = 0; row < gridSize; row++) {
       for (let col = 0; col < gridSize - 2; col++) {
@@ -87,11 +98,11 @@ document.addEventListener('DOMContentLoaded', () => {
           grid[row][col].value === grid[row][col + 1].value &&
           grid[row][col].value === grid[row][col + 2].value
         ) {
-          return true; // Найдено горизонтальное совпадение
+          return true;
         }
       }
     }
-  
+
     for (let col = 0; col < gridSize; col++) {
       for (let row = 0; row < gridSize - 2; row++) {
         if (
@@ -99,20 +110,18 @@ document.addEventListener('DOMContentLoaded', () => {
           grid[row][col].value === grid[row + 1][col].value &&
           grid[row][col].value === grid[row + 2][col].value
         ) {
-          return true; // Найдено вертикальное совпадение
+          return true;
         }
       }
     }
-  
-    return false; // Совпадений не найдено
+
+    return false;
   }
-  
-  // Функция для инициализации игрового поля
+
   function initializeGrid() {
-    //Сбрасываем жизни
     moveCount = 0;
-    resetRedBalls();
-  
+    resetRedBalls(); // Используем обновлённую функцию
+    
     let hasInitialMatches;
     do {
       grid = [];
@@ -120,545 +129,478 @@ document.addEventListener('DOMContentLoaded', () => {
         grid[row] = [];
         for (let col = 0; col < gridSize; col++) {
           grid[row][col] = {
-            value: Math.floor(Math.random() * 5) + 1, // Значения от 1 до 5
+            value: Math.floor(Math.random() * 5) + 1,
             selected: false,
           };
         }
       }
-      renderBoard(); // Отрисовываем доску, чтобы checkForMatches работал корректно
+      renderBoard();
       hasInitialMatches = checkForMatchesOnInitialization();
     } while (hasInitialMatches);
-    // Отрисовываем таблицу лидеров при инициализации игры
-    let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-  
-    // Генерируем случайные записи, только если таблица пуста
+
     if (leaderboard.length === 0) {
       for (let i = 1; i <= 7; i++) {
         const name = generateRandomName();
         const score = Math.floor(Math.random() * 10000);
         leaderboard.push({ name: name, score: score });
       }
-  
-      // Сохраняем случайные записи в localStorage
       localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
     }
-  
-    // Сортируем таблицу лидеров
+
     leaderboard.sort((a, b) => b.score - a.score);
-  
-    // Отрисовываем таблицу лидеров при инициализации игры
     renderLeaderboard(leaderboard);
   }
-// Revised code:
-// Function to render the game board in the DOM
-function renderBoard() {
-  boardElement.innerHTML = ''; // Clear the board
-  for (let row = 0; row < gridSize; row++) {
-    for (let col = 0; col < gridSize; col++) {
-      const cell = document.createElement('div');
-      cell.classList.add('cell');
-      cell.dataset.row = row;
-      cell.dataset.col = col;
 
-      // Add class for the ball
-      cell.classList.add(`ball-${grid[row][col].value}`);
+  function renderBoard() {
+    boardElement.innerHTML = '';
+    for (let row = 0; row < gridSize; row++) {
+      for (let col = 0; col < gridSize; col++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.row = row;
+        cell.dataset.col = col;
+        cell.classList.add(`ball-${grid[row][col].value}`);
 
-      if (grid[row][col].selected) {
-        cell.classList.add('selected');
+        if (grid[row][col].selected) {
+          cell.classList.add('selected');
+        }
+
+        if (currentTheme === 'dark') {
+          cell.classList.add('dark-theme');
+        }
+
+        cell.addEventListener('click', handleCellClick);
+        boardElement.appendChild(cell);
       }
-
-      if (currentTheme === 'dark') {
-        cell.classList.add('dark-theme');
-      }
-
-      cell.addEventListener('click', handleCellClick);
-      boardElement.appendChild(cell);
     }
   }
-}
 
-// Function to handle cell click
-async function handleCellClick(event) {
-  const row = parseInt(event.target.dataset.row);
-  const col = parseInt(event.target.dataset.col);
+  async function handleCellClick(event) {
+    const row = parseInt(event.target.dataset.row);
+    const col = parseInt(event.target.dataset.col);
 
-  if (selectedCell === null) {
-    // First click
-    selectedCell = { row, col };
-    grid[row][col].selected = true;
-    playSound('ball-select-sound');
-  } else {
-    // Second click
-    const firstCell = selectedCell;
-    selectedCell = null;
+    if (selectedCell === null) {
+      selectedCell = { row, col };
+      grid[row][col].selected = true;
+      playSound('ball-select-sound');
+    } else {
+      const firstCell = selectedCell;
+      selectedCell = null;
 
-    // Check for adjacency
-    const isAdjacent =
-      (Math.abs(row - firstCell.row) === 1 && col === firstCell.col) ||
-      (Math.abs(col - firstCell.col) === 1 && row === firstCell.row);
+      const isAdjacent =
+        (Math.abs(row - firstCell.row) === 1 && col === firstCell.col) ||
+        (Math.abs(col - firstCell.col) === 1 && row === firstCell.row);
 
-    if (isAdjacent) {
-      // Swap the cells
-      swapCells(firstCell, { row, col });
+      if (isAdjacent) {
+        swapCells(firstCell, { row, col });
+        const hasMatches = await checkForMatches();
 
-      // Check if the move was successful (resulted in ball removal)
-      const hasMatches = await checkForMatches();
+        if (!hasMatches) {
+          moveCount++;
+          updateRedBalls(); // Используем обновлённую функцию
+        }
 
-      if (!hasMatches) {
-        moveCount++;
-        updateRedBalls();
+        if (moveCount >= redBalls.length) {
+          endGame();
+        }
       } else {
-        // moveCount = 0;
-        // resetRedBalls();
+        grid[firstCell.row][firstCell.col].selected = false;
+        grid[row][col].selected = true;
+        selectedCell = { row, col };
+        playSound('ball-select-sound');
       }
+    }
 
-      if (moveCount >= redBalls.length) {
+    renderBoard();
+  }
+
+  // Остальные функции остаются без изменений
+  async function swapCells(cell1, cell2) {
+    const tempValue = grid[cell1.row][cell1.col].value;
+    grid[cell1.row][cell1.col].value = grid[cell2.row][cell2.col].value;
+    grid[cell2.row][cell2.col].value = tempValue;
+
+    grid[cell1.row][cell1.col].selected = false;
+    grid[cell2.row][cell2.col].selected = false;
+
+    playSound('ball-swap-sound');
+    renderBoard();
+  }
+
+  function endGame() {
+    finalScoreElement.textContent = score;
+    gameOverContainer.style.display = 'flex';
+    localStorage.setItem('score', 0);
+  }
+
+  async function checkForMatches() {
+    let matches = [];
+
+    // Проверка горизонтальных совпадений
+    for (let row = 0; row < gridSize; row++) {
+      for (let col = 0; col < gridSize - 2; col++) {
+        if (
+          grid[row][col].value &&
+          grid[row][col].value === grid[row][col + 1].value &&
+          grid[row][col].value === grid[row][col + 2].value
+        ) {
+          let matchLength = 3;
+          while (
+            col + matchLength < gridSize &&
+            grid[row][col].value === grid[row][col + matchLength].value
+          ) {
+            matchLength++;
+          }
+          for (let i = 0; i < matchLength; i++) {
+            matches.push({ row, col: col + i });
+          }
+          col += matchLength - 1;
+        }
+      }
+    }
+
+    // Проверка вертикальных совпадений
+    for (let col = 0; col < gridSize; col++) {
+      for (let row = 0; row < gridSize - 2; row++) {
+        if (
+          grid[row][col].value &&
+          grid[row][col].value === grid[row + 1][col].value &&
+          grid[row][col].value === grid[row + 2][col].value
+        ) {
+          let matchLength = 3;
+          while (
+            row + matchLength < gridSize &&
+            grid[row][col].value === grid[row + matchLength][col].value
+          ) {
+            matchLength++;
+          }
+          for (let i = 0; i < matchLength; i++) {
+            matches.push({ row: row + i, col });
+          }
+          row += matchLength - 1;
+        }
+      }
+    }
+
+    if (matches.length > 0) {
+      await removeMatches(matches);
+      return true;
+    } else {
+      if (!hasPossibleMoves()) {
         endGame();
       }
-    } else {
-      // Click on a distant cell - just select it
-      grid[firstCell.row][firstCell.col].selected = false;
-      grid[row][col].selected = true;
-      selectedCell = { row, col };
-      playSound('ball-select-sound');
+      return false;
     }
   }
 
-  renderBoard();
-}
-
-function updateRedBalls() {
-  if (moveCount > 0 && moveCount <= redBalls.length) {
-    // Change the ball color to gray
-    redBalls[moveCount - 1].classList.remove('red-ball');
-    redBalls[moveCount - 1].classList.add('gray-ball');
+  function clearBallClass(cellElement) {
+    for (let i = 1; i <= 5; i++) {
+      cellElement.classList.remove(`ball-${i}`);
+    }
   }
 
-  // If all balls have turned gray, reset the counter
-  if (moveCount > redBalls.length) {
-    moveCount = 0;
-    resetRedBalls();
+  async function removeMatches(matches) {
+    let removedCount = matches.length;
+    matches.forEach(match => {
+      const cellElement = document.querySelector(`.board .cell[data-row="${match.row}"][data-col="${match.col}"]`);
+      if (cellElement) {
+        cellElement.classList.add('explosion');
+        clearBallClass(cellElement);
+        grid[match.row][match.col].value = null;
+      }
+    });
+
+    playSound('ball-remove-sound');
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    matches.forEach(match => {
+      const cellElement = document.querySelector(`.board .cell[data-row="${match.row}"][data-col="${match.col}"]`);
+      if (cellElement) {
+          cellElement.classList.remove('explosion');
+      }
+    });
+
+    renderBoard();
+
+    let newScore = calculateScore(removedCount);
+    updateScore(score + newScore);
+
+    await applyGravity();
   }
-}
 
-// Function to swap two cells
-async function swapCells(cell1, cell2) {
-  const tempValue = grid[cell1.row][cell1.col].value;
-  grid[cell1.row][cell1.col].value = grid[cell2.row][cell2.col].value;
-  grid[cell2.row][cell2.col].value = tempValue;
-
-  grid[cell1.row][cell1.col].selected = false;
-  grid[cell2.row][cell2.col].selected = false;
-
-  playSound('ball-swap-sound');
-  renderBoard();
-}
-
-// Function to end the game
-function endGame() {
-  gameOverContainer.style.display = 'flex'; // Show the notification
-}
-
-// Function to reset the ball color
-function resetRedBalls() {
-  redBalls.forEach(ball => {
-    ball.classList.remove('gray-ball');
-    ball.classList.add('red-ball');
-  });
-}
-
-// Function to restart the game
-function restartGame() {
-  gameOverContainer.style.display = 'none'; // Hide the notification
-  moveCount = 0; // Reset the unsuccessful move counter
-  resetRedBalls(); // Reset all balls to red color
-  initializeGrid(); // Restart the game board
-  updateScore(0); // Reset the score
-}
-
-restartButton.addEventListener('click', restartGame);
-
-async function checkForMatches() {
-  let matches = [];
-
-  for (let row = 0; row < gridSize; row++) {
-    for (let col = 0; col < gridSize - 2; col++) {
-      if (
-        grid[row][col].value &&
-        grid[row][col].value === grid[row][col + 1].value &&
-        grid[row][col].value === grid[row][col + 2].value
-      ) {
-        let matchLength = 3;
-        while (
-          col + matchLength < gridSize &&
-          grid[row][col].value === grid[row][col + matchLength].value
-        ) {
-          matchLength++;
+  async function applyGravity() {
+    for (let col = 0; col < gridSize; col++) {
+      let emptyRow = gridSize - 1;
+      for (let row = gridSize - 1; row >= 0; row--) {
+        if (grid[row][col].value !== null) {
+          grid[emptyRow][col].value = grid[row][col].value;
+          if (row !== emptyRow) {
+            grid[row][col].value = null;
+          }
+          emptyRow--;
         }
-        for (let i = 0; i < matchLength; i++) {
-          matches.push({ row, col: col + i });
-        }
-        col += matchLength - 1;
+      }
+
+      for (let row = 0; row <= emptyRow; row++) {
+        grid[row][col].value = Math.floor(Math.random() * 5) + 1;
       }
     }
-  }
 
-  for (let col = 0; col < gridSize; col++) {
-    for (let row = 0; row < gridSize - 2; row++) {
-      if (
-        grid[row][col].value &&
-        grid[row][col].value === grid[row + 1][col].value &&
-        grid[row][col].value === grid[row + 2][col].value
-      ) {
-        let matchLength = 3;
-        while (
-          row + matchLength < gridSize &&
-          grid[row][col].value === grid[row + matchLength][col].value
-        ) {
-          matchLength++;
+    const cellElements = document.querySelectorAll('.board .cell');
+    cellElements.forEach(cellElement => {
+      const row = parseInt(cellElement.dataset.row);
+      const col = parseInt(cellElement.dataset.col);
+      clearBallClass(cellElement);
+      cellElement.classList.add(`ball-${grid[row][col].value}`);
+    });
+
+    let newMatches = [];
+    for (let row = 0; row < gridSize; row++) {
+        for (let col = 0; col < gridSize; col++) {
+            if (grid[row][col].value !== null) {
+                let matchLength = 1;
+                while (col + matchLength < gridSize && grid[row][col].value === grid[row][col + matchLength].value) {
+                    matchLength++;
+                }
+                if (matchLength >= 3) {
+                    for (let i = 0; i < matchLength; i++) {
+                        newMatches.push({ row, col: col + i });
+                    }
+                }
+                col += matchLength - 1;
+
+                matchLength = 1;
+                while (row + matchLength < gridSize && grid[row][col].value === grid[row + matchLength][col].value) {
+                    matchLength++;
+                }
+                if (matchLength >= 3) {
+                    for (let i = 0; i < matchLength; i++) {
+                        newMatches.push({ row: row + i, col });
+                    }
+                }
+            }
         }
-        for (let i = 0; i < matchLength; i++) {
-          matches.push({ row: row + i, col });
-        }
-        row += matchLength - 1;
-      }
+    }
+
+    if (newMatches.length > 0) {
+        await removeMatches(newMatches);
     }
   }
 
-  if (matches.length > 0) {
-    await removeMatches(matches);
-    console.log("checkForMatches: Найдено совпадение, возвращаем true");
-    return true;
-  } else {
-    console.log("checkForMatches: Совпадений не найдено, возвращаем false");
-    if (!hasPossibleMoves()) {
-      endGame();
+  function calculateScore(removedCount) {
+    let scorePerBall = 10;
+    if (removedCount === 4) scorePerBall = 20;
+    if (removedCount === 5) scorePerBall = 30;
+    if (removedCount > 5) scorePerBall = 10 + (removedCount - 3) * 10;
+    return removedCount * scorePerBall;
+  }
+
+  function hasPossibleMoves() {
+    for (let row = 0; row < gridSize; row++) {
+      for (let col = 0; col < gridSize; col++) {
+        if (col < gridSize - 1 && grid[row][col].value) {
+          [grid[row][col].value, grid[row][col + 1].value] = [grid[row][col + 1].value, grid[row][col].value];
+          if (checkMoveResultedInMatch(row, col) || checkMoveResultedInMatch(row, col + 1)) {
+            [grid[row][col].value, grid[row][col + 1].value] = [grid[row][col + 1].value, grid[row][col].value];
+            return true;
+          }
+          [grid[row][col].value, grid[row][col + 1].value] = [grid[row][col + 1].value, grid[row][col].value];
+        }
+        if (row < gridSize - 1 && grid[row][col].value) {
+          [grid[row][col].value, grid[row + 1][col].value] = [grid[row + 1][col].value, grid[row][col].value];
+          if (checkMoveResultedInMatch(row, col) || checkMoveResultedInMatch(row + 1, col)) {
+            [grid[row][col].value, grid[row + 1][col].value] = [grid[row + 1][col].value, grid[row][col].value];
+            return true;
+          }
+          [grid[row][col].value, grid[row + 1][col].value] = [grid[row + 1][col].value, grid[row][col].value];
+        }
+      }
     }
     return false;
   }
-}
 
-function clearBallClass(cellElement) {
-  for (let i = 1; i <= 5; i++) {
-    cellElement.classList.remove(`ball-${i}`);
+  function checkMoveResultedInMatch(row, col) {
+    let count = 1;
+    let startCol = col;
+    while (startCol > 0 && grid[row][startCol].value === grid[row][startCol - 1].value) {
+      count++;
+      startCol--;
+    }
+    let endCol = col;
+    while (endCol < gridSize - 1 && grid[row][endCol].value === grid[row][endCol + 1].value) {
+      count++;
+      endCol++;
+    }
+    if (count >= 3) return true;
+
+    count = 1;
+    let startRow = row;
+    while (startRow > 0 && grid[startRow][col].value === grid[startRow - 1][col].value) {
+      count++;
+      startRow--;
+    }
+    let endRow = row;
+    while (endRow < gridSize - 1 && grid[endRow][col].value === grid[endRow + 1][col].value) {
+      count++;
+      endRow++;
+    }
+    if (count >= 3) return true;
+
+    return false;
   }
-}
 
-async function removeMatches(matches) {
-  let removedCount = matches.length;
-  matches.forEach(match => {
-    const cellElement = document.querySelector(`.board .cell[data-row="${match.row}"][data-col="${match.col}"]`);
-
-    if (cellElement) {
-      cellElement.classList.add('explosion');
-      clearBallClass(cellElement);
-      grid[match.row][match.col].value = null;
-    }
-  });
-
-  playSound('ball-remove-sound');
-  await new Promise(resolve => setTimeout(resolve, 500));
-
-  matches.forEach(match => {
-    const cellElement = document.querySelector(`.board .cell[data-row="${match.row}"][data-col="${match.col}"]`);
-    if (cellElement) {
-        cellElement.classList.remove('explosion');
-    }
-  });
-
-  renderBoard();
-
-  let newScore = calculateScore(removedCount);
-  updateScore(score + newScore);
-
-  await applyGravity();
-}
-
-async function applyGravity() {
-  for (let col = 0; col < gridSize; col++) {
-    let emptyRow = gridSize - 1;
-    for (let row = gridSize - 1; row >= 0; row--) {
-      if (grid[row][col].value !== null) {
-        grid[emptyRow][col].value = grid[row][col].value;
-        if (row !== emptyRow) {
-          grid[row][col].value = null;
-        }
-        emptyRow--;
+  function updateLeaderboard(leaderboard, playerName, score) {
+    leaderboard.sort((a, b) => b.score - a.score);
+    let playerIndex = leaderboard.findIndex(entry => entry.name === playerName);
+    if (playerIndex !== -1) {
+      leaderboard[playerIndex].score = score;
+      while (playerIndex > 0 && leaderboard[playerIndex].score > leaderboard[playerIndex - 1].score) {
+        [leaderboard[playerIndex], leaderboard[playerIndex - 1]] = [leaderboard[playerIndex - 1], leaderboard[playerIndex]];
+        playerIndex--;
       }
-    }
-
-    for (let row = 0; row <= emptyRow; row++) {
-      grid[row][col].value = Math.floor(Math.random() * 5) + 1;
-    }
-  }
-
-  const cellElements = document.querySelectorAll('.board .cell');
-  cellElements.forEach(cellElement => {
-    const row = parseInt(cellElement.dataset.row);
-    const col = parseInt(cellElement.dataset.col);
-    clearBallClass(cellElement);
-    cellElement.classList.add(`ball-${grid[row][col].value}`);
-  });
-
-  let newMatches = [];
-  for (let row = 0; row < gridSize; row++) {
-      for (let col = 0; col < gridSize; col++) {
-          if (grid[row][col].value !== null) {
-              let matchLength = 1;
-              while (col + matchLength < gridSize && grid[row][col].value === grid[row][col + matchLength].value) {
-                  matchLength++;
-              }
-              if (matchLength >= 3) {
-                  for (let i = 0; i < matchLength; i++) {
-                      newMatches.push({ row, col: col + i });
-                  }
-              }
-              col += matchLength - 1;
-
-              matchLength = 1;
-              while (row + matchLength < gridSize && grid[row][col].value === grid[row + matchLength][col].value) {
-                  matchLength++;
-              }
-              if (matchLength >= 3) {
-                  for (let i = 0; i < matchLength; i++) {
-                      newMatches.push({ row: row + i, col });
-                  }
-              }
-          }
-      }
-  }
-
-  if (newMatches.length > 0) {
-      await removeMatches(newMatches);
-  }
-}
-
-function calculateScore(removedCount) {
-  let scorePerBall = 10;
-  if (removedCount === 4) scorePerBall = 20;
-  if (removedCount === 5) scorePerBall = 30;
-  if (removedCount > 5) scorePerBall = 10 + (removedCount - 3) * 10;
-
-  return removedCount * scorePerBall;
-}
-  
-   // Revised code:
-
-// Function to check if there are possible moves
-function hasPossibleMoves() {
-  for (let row = 0; row < gridSize; row++) {
-    for (let col = 0; col < gridSize; col++) {
-      if (col < gridSize - 1 && grid[row][col].value) {
-        [grid[row][col].value, grid[row][col + 1].value] = [grid[row][col + 1].value, grid[row][col].value];
-        if (checkMoveResultedInMatch(row, col) || checkMoveResultedInMatch(row, col + 1)) {
-          [grid[row][col].value, grid[row][col + 1].value] = [grid[row][col + 1].value, grid[row][col].value];
-          return true;
-        }
-        [grid[row][col].value, grid[row][col + 1].value] = [grid[row][col + 1].value, grid[row][col].value];
-      }
-      if (row < gridSize - 1 && grid[row][col].value) {
-        [grid[row][col].value, grid[row + 1][col].value] = [grid[row + 1][col].value, grid[row][col].value];
-        if (checkMoveResultedInMatch(row, col) || checkMoveResultedInMatch(row + 1, col)) {
-          [grid[row][col].value, grid[row + 1][col].value] = [grid[row + 1][col].value, grid[row][col].value];
-          return true;
-        }
-        [grid[row][col].value, grid[row + 1][col].value] = [grid[row + 1][col].value, grid[row][col].value];
-      }
-    }
-  }
-  return false;
-}
-
-// Helper function to check if a move resulted in a match
-function checkMoveResultedInMatch(row, col) {
-  let count = 1;
-  let startCol = col;
-  while (startCol > 0 && grid[row][startCol].value === grid[row][startCol - 1].value) {
-    count++;
-    startCol--;
-  }
-  let endCol = col;
-  while (endCol < gridSize - 1 && grid[row][endCol].value === grid[row][endCol + 1].value) {
-    count++;
-    endCol++;
-  }
-  if (count >= 3) return true;
-
-  count = 1;
-  let startRow = row;
-  while (startRow > 0 && grid[startRow][col].value === grid[startRow - 1][col].value) {
-    count++;
-    startRow--;
-  }
-  let endRow = row;
-  while (endRow < gridSize - 1 && grid[endRow][col].value === grid[endRow + 1][col].value) {
-    count++;
-    endRow++;
-  }
-  if (count >= 3) return true;
-
-  return false;
-}
-
-// Function to end the game
-function endGame() {
-  finalScoreElement.textContent = score;
-  gameOverContainer.style.display = 'flex';
-  localStorage.setItem('score', 0);
-}
-
-function updateLeaderboard(leaderboard, playerName, score) {
-  leaderboard.sort((a, b) => b.score - a.score);
-  let playerIndex = leaderboard.findIndex(entry => entry.name === playerName);
-  if (playerIndex !== -1) {
-    leaderboard[playerIndex].score = score;
-    while (playerIndex > 0 && leaderboard[playerIndex].score > leaderboard[playerIndex - 1].score) {
-      [leaderboard[playerIndex], leaderboard[playerIndex - 1]] = [leaderboard[playerIndex - 1], leaderboard[playerIndex]];
-      playerIndex--;
-    }
-  } else {
-    if (leaderboard.length < 7) {
-      leaderboard.push({ name: playerName, score: score });
-    } else if (score < leaderboard[leaderboard.length - 1].score) {
-      leaderboard[leaderboard.length - 1] = { name: playerName, score: score };
-    }
-  }
-  leaderboard.sort((a, b) => b.score - a.score);
-  if (leaderboard.length > 7) {
-    leaderboard.length = 7;
-  }
-}
-
-function renderLeaderboard(leaderboard) {
-  const leaderboardBody = document.getElementById('leaderboard-body');
-  leaderboardBody.innerHTML = '';
-  for (let i = 0; i < leaderboard.length; i++) {
-    const entry = leaderboard[i];
-    const row = createLeaderboardEntry(i + 1, entry.name, entry.score);
-    leaderboardBody.appendChild(row);
-  }
-  if (leaderboardModal.style.display === 'block') {
-    renderLeaderboardMobile(leaderboard);
-  }
-}
-
-function updateScore(newScore) {
-  score = newScore;
-  scoreElement.textContent = score;
-  localStorage.setItem('score', score);
-  let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-  let playerName = localStorage.getItem('playerName');
-  if (!playerName) {
-    playerName = prompt("Please enter your name:");
-    localStorage.setItem('playerName', playerName);
-  }
-  updateLeaderboard(leaderboard, playerName, score);
-  localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-  renderLeaderboard(leaderboard);
-}
-
-function renderLeaderboardMobile(leaderboard) {
-  leaderboardBodyMobile.innerHTML = '';
-  for (let i = 0; i < leaderboard.length; i++) {
-    const entry = leaderboard[i];
-    const row = createLeaderboardEntry(i + 1, entry.name, entry.score);
-    leaderboardBodyMobile.appendChild(row);
-  }
-}
-
-const toggleTheme = () => {
-  playSound('button-click-sound');
-  body.classList.toggle('dark-theme');
-  container.classList.toggle('dark-theme');
-  currentTheme = body.classList.contains('dark-theme') ? 'dark' : 'light';
-  localStorage.setItem('theme', currentTheme);
-  const cells = document.querySelectorAll('.cell');
-  cells.forEach(cell => {
-    if (currentTheme === 'dark') {
-      cell.classList.add('dark-theme');
     } else {
-      cell.classList.remove('dark-theme');
+      if (leaderboard.length < 7) {
+        leaderboard.push({ name: playerName, score: score });
+      } else if (score < leaderboard[leaderboard.length - 1].score) {
+        leaderboard[leaderboard.length - 1] = { name: playerName, score: score };
+      }
     }
-  });
-};
-
-const toggleBackgroundFunc = () => {
-  playSound('button-click-sound');
-  container.classList.toggle('no-background');
-  backgroundVisible = !container.classList.contains('no-background');
-  localStorage.setItem('backgroundVisible', backgroundVisible);
-  toggleBackground();
-};
-
-const toggleSound = () => {
-  playSound('button-click-sound');
-  soundEnabled = !soundEnabled;
-  localStorage.setItem('soundEnabled', soundEnabled);
-  updateSoundButtonText();
-};
-
-function playSound(soundId) {
-  if (soundEnabled) {
-    const sound = document.getElementById(soundId);
-    sound.currentTime = 0;
-    sound.play();
+    leaderboard.sort((a, b) => b.score - a.score);
+    if (leaderboard.length > 7) {
+      leaderboard.length = 7;
+    }
   }
-}
 
-const restartTheGame = () => {
-  playSound('button-click-sound');
-  gameOverContainer.style.display = 'none';
-  initializeGrid();
-  updateScore(0);
-  localStorage.setItem('score', 0);
-};
+  function renderLeaderboard(leaderboard) {
+    const leaderboardBody = document.getElementById('leaderboard-body');
+    leaderboardBody.innerHTML = '';
+    for (let i = 0; i < leaderboard.length; i++) {
+      const entry = leaderboard[i];
+      const row = createLeaderboardEntry(i + 1, entry.name, entry.score);
+      leaderboardBody.appendChild(row);
+    }
+    if (leaderboardModal.style.display === 'block') {
+      renderLeaderboardMobile(leaderboard);
+    }
+  }
 
-restartButton.addEventListener('click', restartTheGame);
-themeButton.addEventListener('click', toggleTheme);
-toggleBackgroundButton.addEventListener('click', toggleBackgroundFunc);
-soundButton.addEventListener('click', toggleSound);
-themeButtonMobile.addEventListener('click', toggleTheme);
-toggleBackgroundButtonMobile.addEventListener('click', toggleBackgroundFunc);
-soundButtonMobile.addEventListener('click', toggleSound);
-leaderboardButtonMobile.addEventListener('click', () => {
-  playSound('button-click-sound');
-  leaderboardModal.style.display = 'block';
-  renderLeaderboardMobile(leaderboard);
-});
-closeLeaderboard.addEventListener('click', () => {
-  playSound('button-click-sound');
-  leaderboardModal.style.display = 'none';
-});
+  function updateScore(newScore) {
+    score = newScore;
+    scoreElement.textContent = score;
+    localStorage.setItem('score', score);
+    let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+    let playerName = localStorage.getItem('playerName');
+    if (!playerName) {
+      playerName = prompt("Please enter your name:");
+      localStorage.setItem('playerName', playerName);
+    }
+    updateLeaderboard(leaderboard, playerName, score);
+    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+    renderLeaderboard(leaderboard);
+  }
 
-function generateRandomName() {
-  const names = ['Alexander', 'Elena', 'Dmitry', 'Olga', 'Sergey', 'Anna', 'Igor', 'Natalia'];
-  const surnames = ['Ivanov', 'Petrov', 'Sidorov', 'Smirnov', 'Kuznetsov', 'Popov', 'Vasiliev', 'Fedorov'];
-  return names[Math.floor(Math.random() * names.length)] + ' ' + surnames[Math.floor(Math.random() * surnames.length)];
-}
+  function renderLeaderboardMobile(leaderboard) {
+    leaderboardBodyMobile.innerHTML = '';
+    for (let i = 0; i < leaderboard.length; i++) {
+      const entry = leaderboard[i];
+      const row = createLeaderboardEntry(i + 1, entry.name, entry.score);
+      leaderboardBodyMobile.appendChild(row);
+    }
+  }
 
-function createLeaderboardEntry(rank, name, score) {
-  const row = document.createElement('tr');
-  const rankCell = document.createElement('td');
-  const nameCell = document.createElement('td');
-  const scoreCell = document.createElement('td');
+  const toggleTheme = () => {
+    playSound('button-click-sound');
+    body.classList.toggle('dark-theme');
+    container.classList.toggle('dark-theme');
+    currentTheme = body.classList.contains('dark-theme') ? 'dark' : 'light';
+    localStorage.setItem('theme', currentTheme);
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach(cell => {
+      if (currentTheme === 'dark') {
+        cell.classList.add('dark-theme');
+      } else {
+        cell.classList.remove('dark-theme');
+      }
+    });
+  };
 
-  rankCell.textContent = rank;
-  nameCell.textContent = name;
-  scoreCell.textContent = score;
+  const toggleBackgroundFunc = () => {
+    playSound('button-click-sound');
+    container.classList.toggle('no-background');
+    backgroundVisible = !container.classList.contains('no-background');
+    localStorage.setItem('backgroundVisible', backgroundVisible);
+    toggleBackground();
+  };
 
-  row.appendChild(rankCell);
-  row.appendChild(nameCell);
-  row.appendChild(scoreCell);
+  const toggleSound = () => {
+    playSound('button-click-sound');
+    soundEnabled = !soundEnabled;
+    localStorage.setItem('soundEnabled', soundEnabled);
+    updateSoundButtonText();
+  };
 
-  return row;
-}
+  function playSound(soundId) {
+    if (soundEnabled) {
+      const sound = document.getElementById(soundId);
+      sound.currentTime = 0;
+      sound.play();
+    }
+  }
 
-for (let i = 1; i <= 70; i++) {
-  const name = generateRandomName();
-  const score = Math.floor(Math.random() * 10000);
-  const entry = createLeaderboardEntry(i, name, score);
-  leaderboardBody.appendChild(entry);
-}
+  const restartTheGame = () => {
+    playSound('button-click-sound');
+    gameOverContainer.style.display = 'none';
+    initializeGrid();
+    updateScore(0);
+    localStorage.setItem('score', 0);
+  };
 
-initializeGrid();
+  restartButton.addEventListener('click', restartTheGame);
+  themeButton.addEventListener('click', toggleTheme);
+  toggleBackgroundButton.addEventListener('click', toggleBackgroundFunc);
+  soundButton.addEventListener('click', toggleSound);
+  themeButtonMobile.addEventListener('click', toggleTheme);
+  toggleBackgroundButtonMobile.addEventListener('click', toggleBackgroundFunc);
+  soundButtonMobile.addEventListener('click', toggleSound);
+  leaderboardButtonMobile.addEventListener('click', () => {
+    playSound('button-click-sound');
+    leaderboardModal.style.display = 'block';
+    renderLeaderboardMobile(leaderboard);
   });
+  closeLeaderboard.addEventListener('click', () => {
+    playSound('button-click-sound');
+    leaderboardModal.style.display = 'none';
+  });
+
+  function generateRandomName() {
+    const names = ['Alexander', 'Elena', 'Dmitry', 'Olga', 'Sergey', 'Anna', 'Igor', 'Natalia'];
+    const surnames = ['Ivanov', 'Petrov', 'Sidorov', 'Smirnov', 'Kuznetsov', 'Popov', 'Vasiliev', 'Fedorov'];
+    return names[Math.floor(Math.random() * names.length)] + ' ' + surnames[Math.floor(Math.random() * surnames.length)];
+  }
+
+  function createLeaderboardEntry(rank, name, score) {
+    const row = document.createElement('tr');
+    const rankCell = document.createElement('td');
+    const nameCell = document.createElement('td');
+    const scoreCell = document.createElement('td');
+
+    rankCell.textContent = rank;
+    nameCell.textContent = name;
+    scoreCell.textContent = score;
+
+    row.appendChild(rankCell);
+    row.appendChild(nameCell);
+    row.appendChild(scoreCell);
+
+    return row;
+  }
+
+  for (let i = 1; i <= 70; i++) {
+    const name = generateRandomName();
+    const score = Math.floor(Math.random() * 10000);
+    const entry = createLeaderboardEntry(i, name, score);
+    leaderboardBody.appendChild(entry);
+  }
+
+  initializeGrid();
+});
