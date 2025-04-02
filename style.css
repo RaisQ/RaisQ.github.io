@@ -1,6 +1,6 @@
 body {
   font-family: sans-serif;
-  background-image: url('images/fon.jpg');
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='800' viewBox='0 0 1600 800'%3E%3Crect fill='%23A5A5A5' width='1600' height='800'/%3E%3Cg stroke='%23D0D2D1' stroke-width='47.9' stroke-opacity='0.33' %3E%3Ccircle fill='%23A5A5A5' cx='0' cy='0' r='1800'/%3E%3Ccircle fill='%23a2a2a2' cx='0' cy='0' r='1700'/%3E%3Ccircle fill='%239f9e9f' cx='0' cy='0' r='1600'/%3E%3Ccircle fill='%239c9b9c' cx='0' cy='0' r='1500'/%3E%3Ccircle fill='%23999798' cx='0' cy='0' r='1400'/%3E%3Ccircle fill='%23969495' cx='0' cy='0' r='1300'/%3E%3Ccircle fill='%23939192' cx='0' cy='0' r='1200'/%3E%3Ccircle fill='%23908d8f' cx='0' cy='0' r='1100'/%3E%3Ccircle fill='%238d8a8c' cx='0' cy='0' r='1000'/%3E%3Ccircle fill='%238a8789' cx='0' cy='0' r='900'/%3E%3Ccircle fill='%23878486' cx='0' cy='0' r='800'/%3E%3Ccircle fill='%23848083' cx='0' cy='0' r='700'/%3E%3Ccircle fill='%23817d80' cx='0' cy='0' r='600'/%3E%3Ccircle fill='%237e7a7d' cx='0' cy='0' r='500'/%3E%3Ccircle fill='%237b777a' cx='0' cy='0' r='400'/%3E%3Ccircle fill='%23787377' cx='0' cy='0' r='300'/%3E%3Ccircle fill='%23757074' cx='0' cy='0' r='200'/%3E%3Ccircle fill='%23726D71' cx='0' cy='0' r='100'/%3E%3C/g%3E%3C/svg%3E");
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -21,7 +21,6 @@ body {
   height: 100%;
 }
 
-/* Остальной CSS остается без изменений */
 .game-over-container {
   background-color: rgba(0, 0, 0, 0.8);
   position: fixed;
@@ -199,6 +198,12 @@ body {
   z-index: 1;
 }
 
+body.dark-theme {
+  background-color: #333;
+  color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='800' viewBox='0 0 1600 800'%3E%3Crect fill='%23353535' width='1600' height='800'/%3E%3Cg stroke='%23000' stroke-width='47.9' stroke-opacity='0.33' %3E%3Ccircle fill='%23353535' cx='0' cy='0' r='1800'/%3E%3Ccircle fill='%23323232' cx='0' cy='0' r='1700'/%3E%3Ccircle fill='%232f2f2f' cx='0' cy='0' r='1600'/%3E%3Ccircle fill='%232d2d2d' cx='0' cy='0' r='1500'/%3E%3Ccircle fill='%232a2a2a' cx='0' cy='0' r='1400'/%3E%3Ccircle fill='%23272727' cx='0' cy='0' r='1300'/%3E%3Ccircle fill='%23252425' cx='0' cy='0' r='1200'/%3E%3Ccircle fill='%23222222' cx='0' cy='0' r='1100'/%3E%3Ccircle fill='%231f1f1f' cx='0' cy='0' r='1000'/%3E%3Ccircle fill='%231d1d1d' cx='0' cy='0' r='900'/%3E%3Ccircle fill='%231a1a1a' cx='0' cy='0' r='800'/%3E%3Ccircle fill='%23181818' cx='0' cy='0' r='700'/%3E%3Ccircle fill='%23151515' cx='0' cy='0' r='600'/%3E%3Ccircle fill='%23121212' cx='0' cy='0' r='500'/%3E%3Ccircle fill='%230f0e0f' cx='0' cy='0' r='400'/%3E%3Ccircle fill='%230b0a0b' cx='0' cy='0' r='300'/%3E%3Ccircle fill='%23070607' cx='0' cy='0' r='200'/%3E%3Ccircle fill='%23020102' cx='0' cy='0' r='100'/%3E%3C/g%3E%3C/svg%3E");
+}
+
 body.dark-theme .leaderboard {
   border-color: #666;
   background-color: #333;
@@ -329,12 +334,6 @@ button:hover {
   background-color: #eee;
   transition: background-color 0.3s ease, color 0.3s ease;
   color: #333;
-}
-
-body.dark-theme {
-  background-color: #333;
-  color: #fff;
-  background-image: url('images/fon.jpg');
 }
 
 .container.dark-theme {
@@ -494,7 +493,6 @@ button.dark-theme {
   display: none;
 }
 
-/* Styles for mobile devices */
 @media (max-width: 600px) {
   body {
     font-size: 14px;
@@ -527,17 +525,14 @@ button.dark-theme {
     align-items: center;
   }
 
-  /* Hide buttons for desktop */
   .desktop-buttons {
     display: none;
   }
 
-  /* Show dropdown on mobile */
   .mobile-dropdown {
     display: inline-block;
   }
 
-  /* Styles for dropdown */
   .dropdown {
     position: relative;
     display: inline-block;
@@ -620,7 +615,6 @@ button.dark-theme {
     100% { background-position: -480px 0; }
   }
 
-  /* Адаптация сердец для мобильных */
   .heart {
     width: 28px;
     height: 28px;
@@ -688,7 +682,6 @@ button.dark-theme {
   }
 }
 
-/* Styles for leaderboard modal */
 .leaderboard-modal {
   display: none;
   position: fixed;
@@ -724,7 +717,6 @@ button.dark-theme {
   color: black;
 }
 
-/* Hide regular leaderboard on mobile */
 @media (max-width: 600px) {
   .leaderboard {
     display: none;
@@ -736,7 +728,6 @@ button.dark-theme {
   }
 }
 
-/* Темная тема для сердец */
 body.dark-theme .red-balls-container {
   background-color: rgba(0, 0, 0, 0.5);
 }
