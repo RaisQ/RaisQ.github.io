@@ -142,8 +142,38 @@ document.addEventListener('DOMContentLoaded', () => {
       hasInitialMatches = checkForMatchesOnInitialization();
     } while (hasInitialMatches);
 
-    leaderboard.sort((a, b) => b.score - a.score);
-    renderLeaderboard(leaderboard);
+    // Отрисовываем таблицу лидеров при инициализации игры
+    let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+  
+    // Генерируем записи, только если таблица пуста
+if (leaderboard.length === 0) {
+  console.log('No leaderboar')
+  generateRandomName()
+    .then(users => {
+      // Используем полученный список пользователей для генерации записей
+      for (let i = 0; i < Math.min(users.length, 7); i++) {
+        const name = users[i].username;
+        const score = users[i].score;
+        leaderboard.push({ name: name, score: score });
+      }
+
+      // Сохраняем случайные записи в localStorage
+      localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+
+      // Сортируем таблицу лидеров
+      leaderboard.sort((a, b) => b.score - a.score);
+
+      // Отрисовываем таблицу лидеров при инициализации игры
+      renderLeaderboard(leaderboard);
+    })
+    .catch(error => {
+      console.error("Ошибка получения списка пользователей:", error);
+    });
+} else {
+  // Если таблица лидеров уже есть, просто сортируем и отображаем
+  leaderboard.sort((a, b) => b.score - a.score);
+  renderLeaderboard(leaderboard);
+}
   }
 
   function renderBoard() {
@@ -252,6 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
       updateLeaderboard(leaderboard, playerName, score);
       document.querySelector('.name-input-container').style.display = 'none';
       isFirstGame = false;
+      updateUserScore(playerName, score)
       alert('Результат сохранён!');
     } else {
       alert('Пожалуйста, введите ваше имя');
@@ -599,11 +630,6 @@ document.addEventListener('DOMContentLoaded', () => {
     leaderboardModal.style.display = 'none';
   });
 
-  function generateRandomName() {
-    const names = ['Alexander', 'Elena', 'Dmitry', 'Olga', 'Sergey', 'Anna', 'Igor', 'Natalia'];
-    const surnames = ['Ivanov', 'Petrov', 'Sidorov', 'Smirnov', 'Kuznetsov', 'Popov', 'Vasiliev', 'Fedorov'];
-    return names[Math.floor(Math.random() * names.length)] + ' ' + surnames[Math.floor(Math.random() * surnames.length)];
-  }
 
   function createLeaderboardEntry(rank, name, score) {
     const row = document.createElement('tr');
@@ -621,6 +647,127 @@ document.addEventListener('DOMContentLoaded', () => {
 
     return row;
   }
+
+
+
+
+  function generateRandomName() {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", "http://127.0.0.1:8000/users"); // URL для получения списка пользователей
+      xhr.setRequestHeader("Content-Type", "application/json");
+  
+      xhr.onload = function () {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            const users = JSON.parse(xhr.responseText); // Парсим ответ в JSON
+            resolve(users); // Возвращаем список пользователей
+          } catch (error) {
+            reject({
+              status: xhr.status,
+              statusText: "Ошибка парсинга JSON",
+              responseText: xhr.responseText,
+            });
+          }
+        } else {
+          reject({
+            status: xhr.status,
+            statusText: xhr.statusText,
+            responseText: xhr.responseText,
+          });
+        }
+      };
+  
+      xhr.onerror = function () {
+        reject({
+          status: xhr.status,
+          statusText: xhr.statusText,
+          responseText: xhr.responseText,
+        });
+      };
+  
+      xhr.send(); // Отправляем запрос
+    });
+  }
+  
+  
+  function updateUserScore(name1232, score333) {
+    return new Promise((resolve, reject) => {
+      const playerDataDict = {name1232: score333};
+  
+      if (Object.keys(playerDataDict).length === 0) {
+        console.error("Нет данных для отправки на сервер.");
+        reject("Нет данных для отправки на сервер.");
+        return;
+      }
+  
+      console.log("Отправляемые данные:", playerDataDict);
+  
+      const xhr = new XMLHttpRequest();
+      xhr.open("PUT", "http://127.0.0.1:8000/users");
+      xhr.setRequestHeader("Content-Type", "application/json");
+  
+      xhr.onload = function () {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          console.log("Данные успешно отправлены на сервер:", xhr.responseText);
+          resolve(JSON.parse(xhr.responseText));
+        } else {
+          console.error("Ошибка при отправке данных на сервер:", xhr.responseText);
+          reject({
+            status: xhr.status,
+            statusText: xhr.statusText,
+            responseText: xhr.responseText,
+          });
+        }
+      };
+  
+      xhr.onerror = function () {
+        console.error("Ошибка сети при отправке данных на сервер.");
+        reject({
+          status: xhr.status,
+          statusText: xhr.statusText,
+          responseText: xhr.responseText,
+        });
+      };
+  
+      console.log(JSON.stringify(playerDataDict));
+      xhr.send(JSON.stringify(playerDataDict));
+    });
+  }
+  
+  // Функция для получения списка пользователей (GET запрос)
+  function getUsers() {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", "/users");  // Замените "/users" на URL вашего GET эндпоинта
+      xhr.setRequestHeader("Content-Type", "application/json"); // необязательно для GET
+  
+      xhr.onload = function() {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(JSON.parse(xhr.responseText));
+        } else {
+          reject({
+            status: xhr.status,
+            statusText: xhr.statusText,
+            responseText: xhr.responseText
+          });
+        }
+      };
+  
+      xhr.onerror = function() {
+        reject({
+          status: xhr.status,
+          statusText: xhr.statusText,
+          responseText: xhr.responseText
+        });
+      };
+  
+      xhr.send(); // Нет тела запроса для GET
+    });
+  }
+
+
+
 
   initializeGrid();
 });
