@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeLeaderboard = document.querySelector('.close-leaderboard');
   const leaderboardBodyMobile = document.getElementById('leaderboard-body-mobile');
   
-  let moveCount = 0;
+  let moveCount = parseInt(localStorage.getItem('moveCount')) || 0;
   let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
   renderLeaderboard(leaderboard);
   
@@ -91,6 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ball.classList.remove('lost-animation');
       }, 500);
     }
+    // Сохраняем количество жизней
+    localStorage.setItem('moveCount', moveCount);
   }
 
   function checkForMatchesOnInitialization() {
@@ -122,9 +124,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function initializeGrid() {
-    moveCount = 0;
+    moveCount = parseInt(localStorage.getItem('moveCount')) || 0;
     resetRedBalls();
     isFirstGame = true;
+
+    for (let i = 0; i < moveCount; i++) {
+      if (i < redBalls.length) {
+        redBalls[i].classList.add('lost');
+      }
+    }
   
     const savedGridState = localStorage.getItem('gridState');
     if (savedGridState) {
@@ -269,6 +277,7 @@ if (leaderboard.length === 0) {
   function endGame() {
     finalScoreElement.textContent = score;
     gameOverContainer.style.display = 'flex';
+    localStorage.setItem('moveCount', moveCount); // Сохраняем текущее количество жизней
     
     const savedName = localStorage.getItem('playerName');
     if (savedName && !isFirstGame) {
@@ -625,6 +634,7 @@ if (leaderboard.length === 0) {
     playSound('button-click-sound');
     gameOverContainer.style.display = 'none';
     localStorage.removeItem('gridState'); // Очищаем сохранённое состояние
+    localStorage.removeItem('moveCount'); // Сбрасываем количество жизней
     initializeGrid();
     updateScore(0);
     localStorage.setItem('score', 0);
