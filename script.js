@@ -123,9 +123,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function initializeGrid() {
     moveCount = 0;
-    resetRedBalls(); // Используем обновлённую функцию
-    isFirstGame = true; // Сбрасываем флаг при новой игре
-    
+    resetRedBalls();
+    isFirstGame = true;
+  
+    const savedGridState = localStorage.getItem('gridState');
+    if (savedGridState) {
+      // Восстанавливаем сохранённое состояние
+      grid = JSON.parse(savedGridState);
+      renderBoard();
+      return; // Пропускаем генерацию нового поля
+    }
+  
+    // Если сохранённого состояния нет, генерируем новое поле
     let hasInitialMatches;
     do {
       grid = [];
@@ -141,6 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
       renderBoard();
       hasInitialMatches = checkForMatchesOnInitialization();
     } while (hasInitialMatches);
+  
+    leaderboard.sort((a, b) => b.score - a.score);
+    renderLeaderboard(leaderboard);
+    saveGridState(); // Сохраняем новое состояние
 
     // Отрисовываем таблицу лидеров при инициализации игры
     let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
@@ -250,6 +263,7 @@ if (leaderboard.length === 0) {
 
     playSound('ball-swap-sound');
     renderBoard();
+    saveGridState();
   }
 
   function endGame() {
@@ -382,6 +396,7 @@ if (leaderboard.length === 0) {
     updateScore(score + newScore);
 
     await applyGravity();
+    saveGridState();
   }
 
   async function applyGravity() {
@@ -441,6 +456,7 @@ if (leaderboard.length === 0) {
     if (newMatches.length > 0) {
         await removeMatches(newMatches);
     }
+    saveGridState();
   }
 
   function calculateScore(removedCount) {
@@ -608,6 +624,7 @@ if (leaderboard.length === 0) {
   const restartTheGame = () => {
     playSound('button-click-sound');
     gameOverContainer.style.display = 'none';
+    localStorage.removeItem('gridState'); // Очищаем сохранённое состояние
     initializeGrid();
     updateScore(0);
     localStorage.setItem('score', 0);
@@ -631,6 +648,10 @@ if (leaderboard.length === 0) {
   });
 
 
+  function saveGridState() {
+    localStorage.setItem('gridState', JSON.stringify(grid));
+  }
+
   function createLeaderboardEntry(rank, name, score) {
     const row = document.createElement('tr');
     const rankCell = document.createElement('td');
@@ -647,9 +668,6 @@ if (leaderboard.length === 0) {
 
     return row;
   }
-
-
-
 
   function generateRandomName() {
     return new Promise((resolve, reject) => {
