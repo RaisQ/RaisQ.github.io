@@ -158,13 +158,13 @@ document.addEventListener('DOMContentLoaded', () => {
       renderBoard();
       hasInitialMatches = checkForMatchesOnInitialization();
     } while (hasInitialMatches);
-  
+
+    let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
     leaderboard.sort((a, b) => b.score - a.score);
     renderLeaderboard(leaderboard);
     saveGridState(); // Сохраняем новое состояние
-
     // Отрисовываем таблицу лидеров при инициализации игры
-    let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+    
   
     // Генерируем записи, только если таблица пуста
 if (leaderboard.length === 0) {
