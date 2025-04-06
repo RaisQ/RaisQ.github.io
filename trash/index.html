@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3 в ряд</title>
+  <link rel="icon" href="./images/i.ico">
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- Аудиофайлы -->
+  <audio id="button-click-sound" src="./sounds/button-click.mp3" preload="auto"></audio>
+  <audio id="ball-select-sound" src="./sounds/ball-select.mp3" preload="auto"></audio>
+  <audio id="ball-swap-sound" src="./sounds/ball-swap.mp3" preload="auto"></audio>
+  <audio id="ball-remove-sound" src="./sounds/ball-remove.mp3" preload="auto"></audio>
+</head>
+<body>
+  <div class="wrapper">
+    <!-- Таблица лидеров -->
+    <div class="leaderboard">
+      <h2>Таблица лидеров</h2>
+      <div class="leaderboard-table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Место</th>
+              <th>Имя</th>
+              <th>Очки</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body">
+            <!-- Записи таблицы будут добавлены динамически -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Основной контейнер -->
+    <div class="container">
+      <!-- Счет и жизни -->
+      <div class="top-panel">
+        <div class="score-container">
+          Счет: <span id="score">0</span>
+        </div>
+        <div class="hp-container">
+          <div class="red-balls-container">
+            <div class="heart"></div>
+            <div class="heart"></div>
+            <div class="heart"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Основной контент -->
+      <div class="main-content">
+        <!-- Игровое поле -->
+        <div class="board">
+          <!-- Игровое поле будет сгенерировано JavaScript -->
+        </div>
+      </div>
+
+      <!-- Панель управления -->
+      <div class="controls">
+        <!-- Кнопки для десктопа -->
+        <div class="top-buttons desktop-buttons">
+          <button id="theme-button" class="desktop-button">Сменить тему</button>
+          <button id="toggle-background-button" class="desktop-button">Скрыть фон</button>
+          <button id="sound-button" class="desktop-button">Звук: Вкл</button>
+        </div>
+
+        <!-- Выпадающее меню для мобильных -->
+        <div class="dropdown mobile-dropdown">
+          <button class="dropdown-button">Меню</button>
+          <div class="dropdown-content">
+            <button id="theme-button-mobile">Сменить тему</button>
+            <button id="toggle-background-button-mobile">Скрыть фон</button>
+            <button id="sound-button-mobile">Звук: Вкл</button>
+            <button id="leaderboard-button-mobile">Лидеры</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Модальное окно для таблицы лидеров -->
+      <div class="leaderboard-modal" style="display: none;">
+        <div class="leaderboard-modal-content">
+          <span class="close-leaderboard">&times;</span>
+          <h2>Таблица лидеров</h2>
+          <div class="leaderboard-table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Место</th>
+                  <th>Имя</th>
+                  <th>Очки</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-body-mobile">
+                <!-- Записи таблицы будут добавлены динамически -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Уведомление об окончании игры -->
+<div class="game-over-container" style="display: none;">
+  <h2>Игра окончена!</h2>
+  <p>Ваш счет: <span id="final-score">0</span></p>
+  <div class="name-input-container">
+    <input type="text" id="player-name-input" placeholder="Введите ваше имя" maxlength="20">
+    <button id="save-score-button">Сохранить результат</button>
+  </div>
+  <button id="restart-button">Играть снова</button>
+</div>
+
+  <!-- Подключение JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
