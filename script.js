@@ -654,7 +654,7 @@ if (leaderboard.length === 0) {
   function generateRandomName() {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open("GET", "https://forlines-raillord.amvera.io/users"); // URL для получения списка пользователей
+      xhr.open("GET", "http://127.0.0.1:8000/users"); // URL для получения списка пользователей
       xhr.setRequestHeader("Content-Type", "application/json");
   
       xhr.onload = function () {
@@ -693,9 +693,7 @@ if (leaderboard.length === 0) {
   
   function updateUserScore(name1232, score333) {
     return new Promise((resolve, reject) => {
-
-      const playerDataDict = {[name1232]: score333};
-      console.log(playerDataDict); // Для отладки
+      const playerDataDict = {name1232: score333};
   
       if (Object.keys(playerDataDict).length === 0) {
         console.error("Нет данных для отправки на сервер.");
@@ -706,7 +704,7 @@ if (leaderboard.length === 0) {
       console.log("Отправляемые данные:", playerDataDict);
   
       const xhr = new XMLHttpRequest();
-      xhr.open("PUT", "https://forlines-raillord.amvera.io/users");
+      xhr.open("PUT", "http://127.0.0.1:8000/users");
       xhr.setRequestHeader("Content-Type", "application/json");
   
       xhr.onload = function () {
