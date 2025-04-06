@@ -123,9 +123,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function initializeGrid() {
     moveCount = 0;
-    resetRedBalls(); // Используем обновлённую функцию
-    isFirstGame = true; // Сбрасываем флаг при новой игре
-    
+    resetRedBalls();
+    isFirstGame = true;
+  
+    const savedGridState = localStorage.getItem('gridState');
+    if (savedGridState) {
+      // Восстанавливаем сохранённое состояние
+      grid = JSON.parse(savedGridState);
+      renderBoard();
+      return; // Пропускаем генерацию нового поля
+    }
+  
+    // Если сохранённого состояния нет, генерируем новое поле
     let hasInitialMatches;
     do {
       grid = [];
@@ -141,9 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
       renderBoard();
       hasInitialMatches = checkForMatchesOnInitialization();
     } while (hasInitialMatches);
-
+  
     leaderboard.sort((a, b) => b.score - a.score);
     renderLeaderboard(leaderboard);
+    saveGridState(); // Сохраняем новое состояние
   }
 
   function renderBoard() {
@@ -220,6 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     playSound('ball-swap-sound');
     renderBoard();
+    saveGridState();
   }
 
   function endGame() {
@@ -351,6 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateScore(score + newScore);
 
     await applyGravity();
+    saveGridState();
   }
 
   async function applyGravity() {
@@ -410,6 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (newMatches.length > 0) {
         await removeMatches(newMatches);
     }
+    saveGridState();
   }
 
   function calculateScore(removedCount) {
@@ -577,6 +590,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const restartTheGame = () => {
     playSound('button-click-sound');
     gameOverContainer.style.display = 'none';
+    localStorage.removeItem('gridState'); // Очищаем сохранённое состояние
     initializeGrid();
     updateScore(0);
     localStorage.setItem('score', 0);
@@ -603,6 +617,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const names = ['Alexander', 'Elena', 'Dmitry', 'Olga', 'Sergey', 'Anna', 'Igor', 'Natalia'];
     const surnames = ['Ivanov', 'Petrov', 'Sidorov', 'Smirnov', 'Kuznetsov', 'Popov', 'Vasiliev', 'Fedorov'];
     return names[Math.floor(Math.random() * names.length)] + ' ' + surnames[Math.floor(Math.random() * surnames.length)];
+  }
+
+  function saveGridState() {
+    localStorage.setItem('gridState', JSON.stringify(grid));
   }
 
   function createLeaderboardEntry(rank, name, score) {
